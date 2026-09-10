@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.1 — Personal page with semantic HTML</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!--
+    LAB GOAL: never reach for <div> while a more meaningful semantic tag exists.
+    Self-imposed rule: every time you are about to type <div>, stop and ask
+    "is there a tag that says what this actually is?".
+    This whole page contains zero <div> elements.
+  -->
+  <header>
+    <img src="https://picsum.photos/seed/avatar/160/160" width="160" height="160" alt="Portrait of Nguyen Thanh Hai">
+    <h1>Nguyen Thanh Hai</h1>
+    <p>Frontend Developer · working through the 18-day path</p>
+  </header>
+
+  <nav aria-label="Page contents">
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="about">
+      <h2>About</h2>
+      <p>
+        I already have a programming background and I am moving into frontend. This
+        page is the first lab of the HTML/CSS module: practise picking the right
+        semantic tag instead of typing div.
+      </p>
+    </section>
+
+    <section id="skills">
+      <h2>Skills</h2>
+      <ul>
+        <li>Semantic HTML, basic accessibility (alt, label, heading order)</li>
+        <li>CSS: box model, selectors &amp; specificity, Flexbox, Grid</li>
+        <li>Git and working in the terminal</li>
+      </ul>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+
+      <article>
+        <h3>ShopLite — static HTML/CSS build</h3>
+        <p>A miniature store: listing, detail and cart pages. Responsive from 360px to desktop.</p>
+        <p><a href="../../../v1-html/index.html">View project</a></p>
+      </article>
+
+      <article>
+        <h3>Module 1 lab set</h3>
+        <p>Nine small exercises on the box model, specificity, Flexbox, Grid, CSS variables and Tailwind.</p>
+        <p><a href="../index.html">View all labs</a></p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <h2>Contact</h2>
+    <address>
+      Email: <a href="mailto:hello@shoplite.dev">hello@shoplite.dev</a><br>
+      Hanoi, Vietnam
+    </address>
+  </footer>
+</body>
+</html>

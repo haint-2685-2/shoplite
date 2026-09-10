@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 2.3 — Rebuilding a shop layout (Grid frame + Flex blocks)</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 1.5rem 1rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, sans-serif;
+      line-height: 1.5;
+    }
+
+    h1 { font-size: 1.3rem; }
+    p.hint { color: #5d6672; }
+    code { background: #eceff4; padding: 0.1rem 0.3rem; border-radius: 4px; }
+
+    /* "Wireframe" block: the point is to see the LAYOUT, not to look good */
+    .box {
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: #fff;
+      border: 2px dashed #b9c2ce;
+      border-radius: 8px;
+      color: #5d6672;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* ---------- THE FRAME: Grid with grid-template-areas ----------
+       Mobile: every block stacks, the sidebar drops to the bottom.
+       >=900px: two columns — filter sidebar left, content right. */
+    .page {
+      display: grid;
+      gap: 1rem;
+      grid-template-areas:
+        "header"
+        "hero"
+        "filters"
+        "products"
+        "footer";
+    }
+
+    @media (min-width: 900px) {
+      .page {
+        grid-template-columns: 260px minmax(0, 1fr);
+        grid-template-areas:
+          "header   header"
+          "hero     hero"
+          "filters  products"
+          "footer   footer";
+      }
+    }
+
+    .page > header   { grid-area: header; }
+    .page > .hero    { grid-area: hero; min-height: 160px; }
+    .page > .filters { grid-area: filters; }
+    .page > .products{ grid-area: products; }
+    .page > footer   { grid-area: footer; }
+
+    /* ---------- INSIDE EACH BLOCK: Flex ---------- */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar .search { flex: 1; }        /* the search field eats the free space */
+
+    .filters-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    /* The product grid is Grid again, with auto-fill */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .products-grid .box { min-height: 180px; }
+  </style>
+</head>
+<body>
+  <h1>Lab 2.3 — Rebuild the layout of a real shop page</h1>
+  <p class="hint">
+    This lab trains the <strong>eye for layout</strong>: build the frame out of dashed
+    boxes only, no styling. The principle: <code>Grid</code> for the page frame,
+    <code>Flex</code> for the content inside each block.
+  </p>
+
+  <div class="page">
+    <header class="box topbar">
+      <span>LOGO</span>
+      <span class="box search">Search field (flex: 1)</span>
+      <span>Cart</span>
+    </header>
+
+    <section class="box hero">Banner / hero — spans the full width</section>
+
+    <aside class="box filters">
+      <div class="filters-inner">
+        <span class="box">Filter: category</span>
+        <span class="box">Filter: price range</span>
+        <span class="box">Filter: rating</span>
+      </div>
+    </aside>
+
+    <section class="products">
+      <ul class="products-grid">
+        <li class="box">Product</li><li class="box">Product</li>
+        <li class="box">Product</li><li class="box">Product</li>
+        <li class="box">Product</li><li class="box">Product</li>
+        <li class="box">Product</li><li class="box">Product</li>
+      </ul>
+    </section>
+
+    <footer class="box">Footer — four link columns</footer>
+  </div>
+
+  <p class="hint" style="margin-top: 1.5rem">
+    Cross the 900px mark: <code>grid-template-areas</code> flips from one column to two
+    <strong>without changing a single line of HTML</strong> — Grid's single biggest
+    advantage.
+  </p>
+</body>
+</html>

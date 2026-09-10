@@ -1,0 +1,632 @@
+/* ==========================================================================
+   components.css — Reusable blocks: buttons, cards, badges, qty steppers...
+   Naming: light BEM  .block  .block__element  .block--variant
+   ========================================================================== */
+
+/* --- Logo --------------------------------------------------------------- */
+.logo {
+  color: var(--color-text);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.logo:hover {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.logo span {
+  color: var(--color-primary);
+}
+
+/* --- Search field (static UI, not wired up — JS comes in module 2) ------ */
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.search-field:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: var(--ring);
+}
+
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  font-size: var(--text-sm);
+}
+
+/* The wrapper already shows a ring via :focus-within, so drop the input's */
+.search-field input:focus-visible {
+  outline: none;
+}
+
+/* --- Dark mode switch (pure CSS, no JS required) ----------------------- */
+.theme-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.theme-switch {
+  display: inline-flex;
+  padding: var(--space-2);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.theme-switch:hover {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.theme-toggle:focus-visible + .theme-switch {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.theme-switch .icon-moon { display: none; }
+:root:has(#theme-toggle:checked) .theme-switch .icon-sun  { display: none; }
+:root:has(#theme-toggle:checked) .theme-switch .icon-moon { display: block; }
+
+/* --- Header cart link + item-count badge ------------------------------- */
+.cart-link {
+  position: relative;
+  display: inline-flex;
+  padding: var(--space-2);
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  transition: background-color var(--transition);
+}
+
+.cart-link:hover {
+  background-color: var(--color-surface-2);
+  text-decoration: none;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding-inline: var(--space-1);
+  background-color: var(--color-accent);
+  border-radius: var(--radius-pill);
+  color: var(--color-on-accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-surface-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: center;
+  transition: background-color var(--transition), border-color var(--transition),
+    box-shadow var(--transition), color var(--transition), transform var(--transition);
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow);
+  color: var(--color-on-primary);
+}
+
+.btn--outline {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.btn--outline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn--icon {
+  padding: var(--space-2);
+  background-color: transparent;
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+}
+
+.btn--icon:hover {
+  background-color: var(--color-surface-2);
+  color: var(--color-danger);
+}
+
+.btn--lg {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* --- Category chip / label --------------------------------------------- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--color-surface-2);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: background-color var(--transition), color var(--transition);
+  /* Inside a flex column (.product-card, .stack) children stretch to the
+     full width by default — align-self keeps the chip at its own width. */
+  align-self: flex-start;
+}
+
+a.tag:hover,
+.tag--active {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  text-decoration: none;
+}
+
+/* --- Panel: the shared surface box used by every content block --------- */
+.panel {
+  padding: var(--space-4);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition), border-color var(--transition);
+}
+
+/* --- Product card ------------------------------------------------------
+   Column flex + margin-top:auto on the button -> every card is the same
+   height and the buttons line up along the bottom.
+   ----------------------------------------------------------------------- */
+.product-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition),
+    border-color var(--transition), background-color var(--transition);
+}
+
+.product-card:hover,
+.product-card:focus-within {
+  transform: translateY(-3px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.product-card__media {
+  position: relative;
+}
+
+.product-card__img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background-color: var(--color-surface-2);
+  border-radius: var(--radius);
+}
+
+.product-card__flag {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  color: var(--color-on-accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+/* Same -% flag, but inline in the price row instead of over the image */
+.product-card__flag--inline {
+  position: static;
+}
+
+.product-card__title {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.product-card__title a {
+  color: inherit;
+}
+
+.product-card__title a:hover {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.product-card .btn {
+  margin-top: auto; /* the trick: push the button to the bottom */
+}
+
+/* --- Price -------------------------------------------------------------- */
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.price__now {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.price__was {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  text-decoration: line-through;
+}
+
+.price--lg .price__now {
+  font-size: var(--text-h2);
+}
+
+/* --- Rating ------------------------------------------------------------- */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+.rating svg {
+  color: var(--color-star);
+}
+
+/* --- Stock status ------------------------------------------------------ */
+.stock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.stock::before {
+  content: "";
+  width: var(--space-2);
+  height: var(--space-2);
+  background-color: currentcolor;
+  border-radius: var(--radius-pill);
+}
+
+/* --- Image gallery (product.html) -------------------------------------- */
+.gallery__main {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background-color: var(--color-surface-2);
+  border-radius: var(--radius-lg);
+}
+
+.gallery__thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+}
+
+.gallery__thumbs img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transition: border-color var(--transition), opacity var(--transition);
+}
+
+.gallery__thumbs button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius);
+}
+
+.gallery__thumbs button:hover img,
+.gallery__thumbs button:focus-visible img {
+  border-color: var(--color-primary);
+  opacity: 0.85;
+}
+
+/* --- Spec table -------------------------------------------------------- */
+.specs {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.specs dt {
+  color: var(--color-muted);
+}
+
+.specs dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* --- A single cart row -------------------------------------------------
+   Mobile: image in the left column, two info rows on the right.
+   >=640px: everything collapses onto one horizontal row.
+   ----------------------------------------------------------------------- */
+.cart-item {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "img info   remove"
+    "img qty    price";
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cart-item:first-of-type {
+  padding-top: 0;
+}
+
+.cart-item:last-of-type {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.cart-item__img    { grid-area: img; align-self: start; }
+.cart-item__info   { grid-area: info; }
+.cart-item__qty    { grid-area: qty; }
+.cart-item__price  { grid-area: price; }
+.cart-item__remove { grid-area: remove; justify-self: end; }
+
+.cart-item__img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background-color: var(--color-surface-2);
+  border-radius: var(--radius);
+}
+
+.cart-item__title {
+  font-size: var(--text-base);
+}
+
+.cart-item__title a {
+  color: inherit;
+}
+
+.cart-item__meta {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+.cart-item__price {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .cart-item {
+    grid-template-columns: 88px minmax(0, 1fr) auto 6.5rem 2.5rem;
+    grid-template-areas: "img info qty price remove";
+    gap: var(--space-4);
+  }
+}
+
+/* --- Quantity stepper (static UI) -------------------------------------- */
+.qty {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+}
+
+.qty button {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  font-size: var(--text-lg);
+  line-height: 1;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.qty button:hover {
+  background-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.qty input {
+  width: 2.25rem;
+  padding: 0;
+  background: none;
+  border: none;
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  appearance: textfield;
+}
+
+.qty input::-webkit-outer-spin-button,
+.qty input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* --- Order summary block ----------------------------------------------- */
+.summary__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-2);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.summary__row span:last-child {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.summary__row--total {
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--text-lg);
+}
+
+.summary__row--total span:last-child {
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+/* --- Color / variant picker (static UI) -------------------------------- */
+.options {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.options legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.options__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition),
+    box-shadow var(--transition);
+}
+
+.option:hover {
+  border-color: var(--color-primary);
+}
+
+/* :has() -> restyle the whole label when the radio inside it is checked */
+.option:has(input:checked) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: var(--ring);
+}
+
+/* --- Quantity + buy buttons row ---------------------------------------- */
+.buy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.buy-row .btn--primary {
+  flex: 1 1 12rem;
+}
+
+/* --- Discount code field ------------------------------------------------ */
+.coupon {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.coupon input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.coupon input:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--ring);
+}

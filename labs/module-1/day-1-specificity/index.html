@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.3 — Selectors &amp; specificity</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem 1rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.4rem; }
+    code { background: #eceff4; padding: 0.1rem 0.3rem; border-radius: 4px; }
+    ol { padding-left: 1.25rem; }
+
+    .board {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 34rem;
+      margin: 1.5rem 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .board li {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #e4e8ee;
+      background: #fff;
+      font-weight: 600;
+    }
+
+    /*
+      All SIX rules below target the same
+      <li id="target" class="item" data-state="active">.
+      Specificity is read as three columns (id, class/attr/pseudo-class, element):
+    */
+    li                        { color: #6b7280; }  /* 0-0-1 */
+    .item                     { color: #2f5bea; }  /* 0-1-0  beats li */
+    li.item                   { color: #7c3aed; }  /* 0-1-1  beats .item */
+    [data-state="active"]     { color: #0f766e; }  /* 0-1-0  ties .item but comes later, so it wins; still loses to li.item */
+    li.item:nth-child(4)      { color: #b45309; }  /* 0-2-1  beats everything above */
+    #target                   { color: #d13b3b; }  /* 1-0-0  an id beats them all -> THIS IS THE FINAL COLOR */
+
+    /* The one thing that breaks all of the above: !important (use sparingly) */
+    .shout { color: #059669 !important; }
+
+    /* :hover scores 0-1-0; combined with an element that is 0-1-1 */
+    li.item:hover { background: #f3f6ff; }
+
+    /* :nth-child(odd) shows a pseudo-class selecting by position */
+    .board li:nth-child(odd) { border-left: 4px solid #2f5bea; }
+  </style>
+</head>
+<body>
+  <h1>Lab 1.3 — Which rule wins?</h1>
+  <p>
+    The fastest way to learn this: <strong>guess first, then look</strong>. Read the
+    six rules in <code>&lt;style&gt;</code>, predict the text color of the "Target"
+    row, and only then open the page.
+  </p>
+
+  <ol>
+    <li>Count specificity in three columns: <code>id</code> – <code>class/attr/pseudo-class</code> – <code>element</code>.</li>
+    <li>A left column outweighs every column to its right: <code>1-0-0</code> always beats <code>0-9-9</code>.</li>
+    <li>On a tie, the rule written <strong>later</strong> in the file wins.</li>
+  </ol>
+
+  <ul class="board">
+    <li>Plain row (matches <code>li</code> only)</li>
+    <li class="item">Matches <code>li</code> + <code>.item</code> + <code>li.item</code></li>
+    <li class="item" data-state="active">Adds <code>[data-state="active"]</code></li>
+    <li class="item" data-state="active" id="target">Target — matches all six rules</li>
+    <li class="item shout">Row carrying <code>!important</code></li>
+  </ul>
+
+  <p>
+    Answer: the "Target" row is <strong>red</strong>, because <code>#target</code>
+    scores <code>1-0-0</code> — higher than any class or element rule above it,
+    <code>li.item:nth-child(4)</code> (<code>0-2-1</code>) included. The last row is
+    <strong>green</strong> because <code>!important</code> sits outside the
+    specificity rules entirely.
+  </p>
+</body>
+</html>
