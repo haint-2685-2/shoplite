@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 3.3 — The same card: plain CSS vs Tailwind</title>
+
+  <!--
+    Tailwind via CDN: for getting familiar in module 1 ONLY.
+    A real setup (PostCSS / the Vite plugin) comes with React and Next — the CDN
+    is not production-grade because it compiles classes in the browser.
+    Note: this CDN ships Tailwind's "preflight" reset, so it also affects the
+    plain-CSS card on the left. That is why that card declares every value.
+  -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* --- The card written in plain CSS (the way days 1-3 taught) --- */
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem;
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+      transition: box-shadow 150ms ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%);
+    }
+
+    .card__img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 0.375rem;
+    }
+
+    .card__tag {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+    }
+
+    .card__title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .card__price {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .card__btn {
+      margin-top: auto;
+      padding: 0.5rem 1rem;
+      background-color: #2563eb;
+      border: none;
+      border-radius: 0.5rem;
+      color: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 150ms ease;
+    }
+
+    .card__btn:hover { background-color: #1d4ed8; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 p-6">
+  <h1 class="text-xl font-bold mb-2">Lab 3.3 — One card, two ways to write it</h1>
+  <p class="text-gray-600 mb-6 max-w-2xl">
+    The two cards below look <strong>absolutely identical</strong>. The left one is
+    plain CSS (68 lines of CSS plus 6 class names you had to invent); the right one is
+    Tailwind utility classes (0 lines of CSS). Compare their computed CSS in DevTools.
+  </p>
+
+  <div class="grid gap-6 sm:grid-cols-2 max-w-3xl">
+    <!-- ============ OPTION 1: PLAIN CSS ============ -->
+    <section>
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-2">Plain CSS</h2>
+      <article class="card">
+        <img class="card__img" src="https://picsum.photos/seed/shoplite-aura/400/400" width="400" height="400" alt="Aura X2 noise-cancelling headphones">
+        <span class="card__tag">Audio</span>
+        <h3 class="card__title">Aura X2 Noise-Cancelling Headphones</h3>
+        <p class="card__price">2,490,000₫</p>
+        <button class="card__btn" type="button">Add to cart</button>
+      </article>
+    </section>
+
+    <!-- ============ OPTION 2: TAILWIND ============ -->
+    <section>
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-2">Tailwind</h2>
+      <article class="flex flex-col gap-2 p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow">
+        <img class="w-full aspect-square object-cover rounded-md" src="https://picsum.photos/seed/shoplite-aura/400/400" width="400" height="400" alt="Aura X2 noise-cancelling headphones">
+        <span class="text-xs uppercase tracking-wider text-gray-500">Audio</span>
+        <h3 class="text-base font-semibold">Aura X2 Noise-Cancelling Headphones</h3>
+        <p class="text-lg font-bold">2,490,000₫</p>
+        <button class="mt-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors" type="button">
+          Add to cart
+        </button>
+      </article>
+    </section>
+  </div>
+
+  <h2 class="text-lg font-semibold mt-10 mb-3">Every class mapped to its CSS property</h2>
+  <div class="overflow-x-auto">
+    <table class="text-sm border-collapse min-w-[36rem]">
+      <thead>
+        <tr class="text-left border-b border-gray-300">
+          <th class="py-2 pr-6">Tailwind</th>
+          <th class="py-2">Equivalent CSS</th>
+        </tr>
+      </thead>
+      <tbody class="align-top">
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">flex flex-col</td><td class="py-1.5 font-mono">display: flex; flex-direction: column;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">gap-2</td><td class="py-1.5 font-mono">gap: 0.5rem;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">p-4</td><td class="py-1.5 font-mono">padding: 1rem;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">px-4 py-2</td><td class="py-1.5 font-mono">padding: 0.5rem 1rem;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">mt-auto</td><td class="py-1.5 font-mono">margin-top: auto;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">bg-white / bg-blue-600</td><td class="py-1.5 font-mono">background-color: #fff / #2563eb;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">border border-gray-200</td><td class="py-1.5 font-mono">border: 1px solid #e5e7eb;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">rounded-lg / rounded-md</td><td class="py-1.5 font-mono">border-radius: 0.5rem / 0.375rem;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">shadow-sm / shadow-lg</td><td class="py-1.5 font-mono">box-shadow: …</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">hover:shadow-lg</td><td class="py-1.5 font-mono">.x:hover { box-shadow: … }</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">text-sm / text-lg</td><td class="py-1.5 font-mono">font-size: 0.875rem / 1.125rem;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">font-semibold / font-bold</td><td class="py-1.5 font-mono">font-weight: 600 / 700;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">uppercase tracking-wider</td><td class="py-1.5 font-mono">text-transform: uppercase; letter-spacing: 0.05em;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">w-full aspect-square object-cover</td><td class="py-1.5 font-mono">width: 100%; aspect-ratio: 1; object-fit: cover;</td></tr>
+        <tr class="border-b border-gray-200"><td class="py-1.5 pr-6 font-mono">sm:grid-cols-2</td><td class="py-1.5 font-mono">@media (min-width: 640px) { grid-template-columns: repeat(2, minmax(0,1fr)) }</td></tr>
+        <tr><td class="py-1.5 pr-6 font-mono">transition-shadow</td><td class="py-1.5 font-mono">transition: box-shadow 150ms …;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="mt-8 max-w-2xl text-gray-700">
+    <strong>The point:</strong> Tailwind is not a new way to do layout — it is a
+    <em>short name</em> for exactly the CSS properties you just learned. The
+    <code class="font-mono bg-gray-200 px-1 rounded">sm:</code> /
+    <code class="font-mono bg-gray-200 px-1 rounded">lg:</code> prefixes are media
+    queries, and
+    <code class="font-mono bg-gray-200 px-1 rounded">hover:</code> /
+    <code class="font-mono bg-gray-200 px-1 rounded">focus:</code> are pseudo-classes.
+    Once the underlying CSS is solid, Tailwind is just a change of syntax.
+  </p>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 2.1 — Navbar with Flexbox</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem 1rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.4rem; }
+    h2 { font-size: 1rem; margin: 2rem 0 0.5rem; }
+    code { background: #eceff4; padding: 0.1rem 0.3rem; border-radius: 4px; }
+
+    .bar {
+      display: flex;
+      align-items: center;     /* centers on the cross axis (vertical) */
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      background: #fff;
+      border: 1px solid #e4e8ee;
+      border-radius: 10px;
+    }
+
+    .bar a {
+      color: #1a1f27;
+      text-decoration: none;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .bar a:hover { color: #2f5bea; }
+    .brand { font-size: 1.15rem; color: #2f5bea; }
+
+    /* --- Ways to distribute along the main axis --- */
+    .bar--between { justify-content: space-between; }
+    .bar--center  { justify-content: center; }
+    .bar--end     { justify-content: flex-end; }
+
+    /*
+      WHAT REAL CODE USES: no justify-content at all.
+      Give one item margin-left:auto — it absorbs all the free space and
+      pushes itself plus everything after it to the right.
+    */
+    .push { margin-left: auto; }
+
+    /* Never breaks on a narrow screen: allow wrapping */
+    .bar--wrap { flex-wrap: wrap; }
+
+    /* Or: keep one row and scroll it (the mobile-app pattern) */
+    .bar--scroll { overflow-x: auto; }
+
+    .links { display: flex; gap: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Lab 2.1 — Navbar: four Flexbox variants</h1>
+  <p>Drag the window down to 360px to see which ones break and which do not.</p>
+
+  <h2>1. <code>justify-content: space-between</code></h2>
+  <nav class="bar bar--between">
+    <a class="brand" href="#">ShopLite</a>
+    <span class="links"><a href="#">Products</a><a href="#">Deals</a><a href="#">Cart</a></span>
+  </nav>
+
+  <h2>2. <code>justify-content: center</code></h2>
+  <nav class="bar bar--center">
+    <a href="#">Home</a><a href="#">Products</a><a href="#">Contact</a>
+  </nav>
+
+  <h2>3. <code>margin-left: auto</code> — the most used trick</h2>
+  <p>Logo on the left, menu pushed right without any <code>justify-content</code>.</p>
+  <nav class="bar">
+    <a class="brand" href="#">ShopLite</a>
+    <a class="push" href="#">Products</a>
+    <a href="#">Deals</a>
+    <a href="#">Cart</a>
+  </nav>
+
+  <h2>4. Surviving narrow screens: <code>flex-wrap: wrap</code> vs scrolling</h2>
+  <nav class="bar bar--wrap">
+    <a class="brand" href="#">ShopLite</a>
+    <a href="#">Phones</a><a href="#">Laptops</a><a href="#">Audio</a>
+    <a href="#">Accessories</a><a href="#">Watches</a><a href="#">E-readers</a>
+  </nav>
+  <nav class="bar bar--scroll" style="margin-top: 0.75rem">
+    <a class="brand" href="#">ShopLite</a>
+    <a href="#">Phones</a><a href="#">Laptops</a><a href="#">Audio</a>
+    <a href="#">Accessories</a><a href="#">Watches</a><a href="#">E-readers</a>
+  </nav>
+
+  <p style="margin-top: 2rem">
+    <strong>Takeaway:</strong> Flex is for <em>one dimension</em> — a row of items of
+    differing sizes. ShopLite uses variant 3 (<code>margin-left: auto</code>) for the
+    header and the scrolling variant for its category bar.
+  </p>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.2 — Box model: content-box vs border-box</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem 1rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.4rem; }
+    h2 { font-size: 1.1rem; margin-top: 2rem; }
+    code { background: #eceff4; padding: 0.1rem 0.3rem; border-radius: 4px; }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    /* Same width: 200px, same padding + border — only box-sizing differs */
+    .card {
+      width: 200px;
+      padding: 24px;              /* INNER padding: pushes content off the edge */
+      border: 6px solid #2f5bea;  /* border: counted in width when border-box */
+      margin: 0;                  /* OUTER spacing: never counted in width */
+      background-color: #fff;
+      border-radius: 8px;
+    }
+
+    /* The CSS default: width covers the content box only
+       -> real width = 200 + 24*2 + 6*2 = 260px */
+    .row--content .card {
+      box-sizing: content-box;
+      border-color: #d13b3b;
+    }
+
+    /* What virtually every project uses: width includes padding + border
+       -> real width = exactly 200px, and the content shrinks to 140px */
+    .row--border .card {
+      box-sizing: border-box;
+    }
+
+    /* margin is NEVER part of width — it only pushes boxes apart */
+    .row--margin .card {
+      box-sizing: border-box;
+      margin: 0 24px 24px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lab 1.2 — The box model in DevTools</h1>
+  <p>
+    The three rows below share <code>width: 200px</code>, <code>padding: 24px</code>
+    and <code>border: 6px</code>. Open DevTools → <strong>Computed</strong> tab, click
+    each card and read the <em>Box model</em> diagram to compare real widths.
+  </p>
+
+  <h2>1. <code>box-sizing: content-box</code> (the CSS default)</h2>
+  <p>Real width = 200 + 24·2 + 6·2 = <strong>260px</strong>. This is the root of every "why is my layout overflowing?" bug.</p>
+  <section class="row row--content">
+    <article class="card">Card A</article>
+    <article class="card">Card B</article>
+    <article class="card">Card C</article>
+  </section>
+
+  <h2>2. <code>box-sizing: border-box</code></h2>
+  <p>Real width = exactly <strong>200px</strong>; the content area shrinks to 140px. That is why every project resets <code>* { box-sizing: border-box }</code>.</p>
+  <section class="row row--border">
+    <article class="card">Card A</article>
+    <article class="card">Card B</article>
+    <article class="card">Card C</article>
+  </section>
+
+  <h2>3. Adding <code>margin</code></h2>
+  <p>Still <strong>200px</strong>: margin pushes the boxes apart without resizing them.</p>
+  <section class="row row--margin">
+    <article class="card">Card A</article>
+    <article class="card">Card B</article>
+    <article class="card">Card C</article>
+  </section>
+</body>
+</html>

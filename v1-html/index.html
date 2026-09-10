@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopLite — Tech Store</title>
+  <meta name="description" content="ShopLite: a curated list of tech products with transparent pricing.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Load order matters: tokens -> base -> layout -> components -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">Shop<span>Lite</span></a>
+
+      <form class="search-field" action="index.html" method="get" role="search">
+        <label class="visually-hidden" for="search">Search products</label>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M20 20l-3.6-3.6"></path>
+        </svg>
+        <input id="search" name="q" type="search" placeholder="Search products, brands..." autocomplete="off">
+      </form>
+
+      <div class="header-actions">
+        <input class="theme-toggle" id="theme-toggle" type="checkbox">
+        <label class="theme-switch" for="theme-toggle">
+          <span class="visually-hidden">Toggle light / dark mode</span>
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"></path>
+          </svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M20 14.6A8.4 8.4 0 0 1 9.4 4a8.5 8.5 0 1 0 10.6 10.6z"></path>
+          </svg>
+        </label>
+
+        <a class="cart-link" href="cart.html">
+          <span class="visually-hidden">Cart, 3 items</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L20 7.5H6.1"></path>
+            <circle cx="10" cy="20" r="1.3"></circle>
+            <circle cx="17" cy="20" r="1.3"></circle>
+          </svg>
+          <span class="badge">3</span>
+        </a>
+      </div>
+    </div>
+
+    <nav class="site-nav" aria-label="Product categories">
+      <div class="container">
+        <ul class="nav-list">
+          <li><a class="nav-link nav-link--active" href="index.html" aria-current="page">All</a></li>
+          <li><a class="nav-link" href="index.html">Phones</a></li>
+          <li><a class="nav-link" href="index.html">Laptops</a></li>
+          <li><a class="nav-link" href="index.html">Audio</a></li>
+          <li><a class="nav-link" href="index.html">Accessories</a></li>
+          <li><a class="nav-link" href="index.html">Watches</a></li>
+          <li><a class="nav-link" href="index.html">E-readers</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container page" id="main">
+    <section class="panel hero stack" aria-labelledby="hero-title">
+      <h1 id="hero-title">Curated tech, transparent pricing</h1>
+      <p>
+        This whole interface is the static build of ShopLite: semantic HTML and plain
+        CSS, without a single line of JavaScript. Real data arrives from an API in
+        module 2.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary btn--lg" href="#products-title">Browse products</a>
+        <a class="btn btn--outline btn--lg" href="cart.html">View my cart</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="products-title">
+      <div class="section-head">
+        <h2 id="products-title">Products</h2>
+        <p>Showing 8 of 128 products</p>
+      </div>
+
+      <!--
+        The grid uses repeat(auto-fill, minmax(220px, 1fr)):
+        the column count follows the available width with NO media query.
+      -->
+      <ul class="product-grid">
+        <li>
+          <article class="product-card">
+            <div class="product-card__media">
+              <img class="product-card__img" src="https://picsum.photos/seed/shoplite-aura/440/440" width="440" height="440" alt="Aura X2 noise-cancelling headphones in black">
+              <span class="product-card__flag">-22%</span>
+            </div>
+            <span class="tag">Audio</span>
+            <h3 class="product-card__title"><a href="product.html">Aura X2 Noise-Cancelling Headphones</a></h3>
+            <p class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"></path></svg>
+              4.8 · 126 reviews
+            </p>
+            <p class="price">
+              <span class="price__now">2,490,000₫</span>
+              <span class="price__was">3,190,000₫</span>
+            </p>
+            <button class="btn btn--primary" type="button">Add to cart</button>
+          </article>
+        </li>
+
+        <li>
+          <article class="product-card">
+            <div class="product-card__media">
+              <img class="product-card__img" src="https://picsum.photos/seed/shoplite-nova/440/440" width="440" height="440" alt="Nova 12 Pro smartphone seen from the back" loading="lazy">
+            </div>
+            <span class="tag">Phones</span>
+            <h3 class="product-card__title"><a href="product.html">Nova 12 Pro Smartphone 256GB</a></h3>
+            <p class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"></path></svg>
+              4.7 · 89 reviews
+            </p>
+            <p class="price">
+              <span class="price__now">12,990,000₫</span>
+            </p>
+            <button class="btn btn--primary" type="button">Add to cart</button>
+          </article>
+        </li>
+
+        <li>
+          <article class="product-card">
+            <div class="product-card__media">
+              <img class="product-card__img" src="https://picsum.photos/seed/shoplite-zen/440/440" width="440" height="440" alt="Zenbook Air 14 laptop open on a wooden desk" loading="lazy">
+            </div>
+            <span class="tag">Laptops</span>
+            <h3 class="product-card__title"><a href="product.html">Zenbook Air 14-inch Laptop</a></h3>
+            <p class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"></path></svg>
+              4.9 · 54 reviews
+            </p>
+            <p class="price">
+              <span class="price__now">21,500,000₫</span>
+            </p>
+            <button class="btn btn--primary" type="button">Add to cart</button>
+          </article>
+        </li>
+
+        <li>
+          <article class="product-card">
+            <div class="product-card__media">
+              <img class="product-card__img" src="https://picsum.photos/seed/shoplite-pulse/440/440" width="440" height="440" alt="Pulse 3 smartwatch with a silicone strap" loading="lazy">
+              <span class="product-card__flag">-17%</span>
+            </div>
+            <span class="tag">Watches</span>
+            <h3 class="product-card__title"><a href="product.html">Pulse 3 Smartwatch</a></h3>
+            <p class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"></path></svg>
+              4.5 · 212 reviews
+            </p>
+            <p class="price">
+              <span class="price__now">1,890,000₫</span>
+              <span class="price__was">2,290,000₫</span>
+            </p>
+            <button class="btn btn--primary" type="button">Add to cart</button>
+          </article>
+        </li>
+
+        <li>
+          <article class="product-card">
+            <div class="product-card__media">
+              <img class="product-card__img" src="https://picsum.photos/seed/shoplite-kite/440/440" width="440" height="440" alt="Kite 68 mechanical keyboard with backlighting" loading="lazy">
+            </div>
+            <span class="tag">Accessories</span>
+            <h3 class="product-card__title"><a href="product.html">Kite 68 Mechanical Keyboard</a></h3>
+            <p class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"></path></svg>
+              4.6 · 75 reviews
+            </p>
+            <p class="price">
+              <span class="price__now">1,150,000₫</span>
+            </p>
+            <button class="btn btn--primary" type="button">Add to cart</button>
+          </article>
+        </li>
+
+        <li>
+          <article class="product-card">
+            <div class="product-card__media">
+              <img class="product-card__img" src="https://picsum.photos/seed/shoplite-glide/440/440" width="440" height="440" alt="Glide M2 wireless mouse in grey" loading="lazy">
+            </div>
+            <span class="tag">Accessories</span>
+            <h3 class="product-card__title"><a href="product.html">Glide M2 Wireless Mouse</a></h3>
+            <p class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"></path></svg>
+              4.4 · 310 reviews
+            </p>
+            <p class="price">
+              <span class="price__now">590,000₫</span>
+            </p>
+            <button class="btn btn--primary" type="button">Add to cart</button>
+          </article>
+        </li>
+
+        <li>
+          <article class="product-card">
+            <div class="product-card__media">
+              <img class="product-card__img" src="https://picsum.photos/seed/shoplite-boom/440/440" width="440" height="440" alt="Boom Mini cylindrical bluetooth speaker" loading="lazy">
+              <span class="product-card__flag">-18%</span>
+            </div>
+            <span class="tag">Audio</span>
+            <h3 class="product-card__title"><a href="product.html">Boom Mini Bluetooth Speaker</a></h3>
+            <p class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"></path></svg>
+              4.3 · 140 reviews
+            </p>
+            <p class="price">
+              <span class="price__now">780,000₫</span>
+              <span class="price__was">950,000₫</span>
+            </p>
+            <button class="btn btn--primary" type="button">Add to cart</button>
+          </article>
+        </li>
+
+        <li>
+          <article class="product-card">
+            <div class="product-card__media">
+              <img class="product-card__img" src="https://picsum.photos/seed/shoplite-paper/440/440" width="440" height="440" alt="Paper 7 e-reader showing a page of text" loading="lazy">
+            </div>
+            <span class="tag">E-readers</span>
+            <h3 class="product-card__title"><a href="product.html">Paper 7 E-Reader</a></h3>
+            <p class="rating">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.2-5.9 3.2 1.2-6.5L2.5 9.4l6.6-.9z"></path></svg>
+              4.8 · 61 reviews
+            </p>
+            <p class="price">
+              <span class="price__now">3,450,000₫</span>
+            </p>
+            <button class="btn btn--primary" type="button">Add to cart</button>
+          </article>
+        </li>
+      </ul>
+
+      <nav class="pagination" aria-label="Pagination">
+        <a class="btn btn--outline" href="index.html">Previous</a>
+        <a class="btn btn--primary" href="index.html" aria-current="page">1</a>
+        <a class="btn btn--outline" href="index.html">2</a>
+        <a class="btn btn--outline" href="index.html">3</a>
+        <a class="btn btn--outline" href="index.html">Next</a>
+      </nav>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h2>ShopLite</h2>
+          <p>A miniature tech store — the mini-project of the 18-day Frontend path.</p>
+        </div>
+        <div>
+          <h2>Shop</h2>
+          <ul class="footer-list">
+            <li><a href="index.html">All products</a></li>
+            <li><a href="index.html">New arrivals</a></li>
+            <li><a href="index.html">On sale</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Support</h2>
+          <ul class="footer-list">
+            <li><a href="index.html">Return policy</a></li>
+            <li><a href="index.html">Shipping</a></li>
+            <li><a href="index.html">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Contact</h2>
+          <ul class="footer-list">
+            <li><a href="mailto:hello@shoplite.dev">hello@shoplite.dev</a></li>
+            <li>Hanoi, Vietnam</li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-bottom">© 2026 ShopLite · A learning project, nothing is really for sale.</p>
+    </div>
+  </footer>
+</body>
+</html>

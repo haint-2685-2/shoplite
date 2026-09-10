@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 3.1 — Mobile-first with media queries</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem 1rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.4rem; }
+    h2 { font-size: 1rem; margin: 2rem 0 0.5rem; }
+    code { background: #eceff4; padding: 0.1rem 0.3rem; border-radius: 4px; }
+
+    .grid {
+      display: grid;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .grid li {
+      display: grid;
+      place-items: center;
+      min-height: 100px;
+      background: #fff;
+      border: 1px solid #e4e8ee;
+      border-radius: 10px;
+      font-weight: 600;
+      color: #5d6672;
+    }
+
+    /* =======================================================================
+       APPROACH 1 — Mobile-first with media queries.
+       The BASE targets the narrowest screen (1 column); only min-width adds
+       columns on top. Never write max-width to undo something you just set.
+       ======================================================================= */
+    .grid--mq { grid-template-columns: 1fr; }
+
+    @media (min-width: 640px) {
+      .grid--mq { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 1024px) {
+      .grid--mq { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* =======================================================================
+       APPROACH 2 — No media query needed.
+       auto-fill + minmax does the same job, and it reacts to the CONTAINER
+       width rather than the window width.
+       ======================================================================= */
+    .grid--auto { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+    /* Fluid type without a media query: clamp(min, preferred, max) */
+    .fluid-title {
+      font-size: clamp(1.25rem, 1rem + 2.5vw, 2.5rem);
+      margin: 2rem 0 0.5rem;
+    }
+
+    /* Padding can be fluid too */
+    .fluid-box {
+      padding: clamp(1rem, 0.5rem + 3vw, 3rem);
+      background: #fff;
+      border: 1px solid #e4e8ee;
+      border-radius: 10px;
+    }
+
+    /* Report the active breakpoint, so the media queries are visible */
+    .badge::after { content: "< 640px: 1 column"; }
+    @media (min-width: 640px)  { .badge::after { content: "≥ 640px: 2 columns"; } }
+    @media (min-width: 1024px) { .badge::after { content: "≥ 1024px: 4 columns"; } }
+  </style>
+</head>
+<body>
+  <h1>Lab 3.1 — Mobile-first</h1>
+  <p>Open DevTools → responsive mode and drag across the 640px and 1024px marks.</p>
+  <p><strong>Currently matching: </strong><span class="badge"></span></p>
+
+  <h2>Approach 1 — <code>min-width</code> media queries (1 → 2 → 4 columns)</h2>
+  <ul class="grid grid--mq">
+    <li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li>
+  </ul>
+
+  <h2>Approach 2 — <code>auto-fill + minmax</code>, no media query</h2>
+  <ul class="grid grid--auto">
+    <li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li><li>8</li>
+  </ul>
+
+  <h1 class="fluid-title">A heading using clamp()</h1>
+  <div class="fluid-box">
+    Both the font size and the padding of this box use <code>clamp()</code> — they
+    scale continuously with the viewport instead of jumping at a breakpoint.
+  </div>
+
+  <p style="margin-top: 2rem">
+    <strong>When to use which:</strong> a simple grid → <code>auto-fill</code>. When
+    the <em>structure</em> itself has to change (one column becoming two with a
+    sidebar, hiding or showing a block) → that is what a media query is for. Font
+    sizes and spacing → <code>clamp()</code>.
+  </p>
+</body>
+</html>

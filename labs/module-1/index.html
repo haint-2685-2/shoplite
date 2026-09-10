@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Module 1 Labs — HTML, CSS &amp; Tailwind</title>
+  <style>
+    body {
+      max-width: 52rem;
+      margin-inline: auto;
+      padding: 2.5rem 1rem 4rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: #5d6672; }
+    p.lead { margin: 0 0 1rem; color: #5d6672; }
+
+    ol { display: flex; flex-direction: column; gap: 0.75rem; margin: 0; padding-left: 1.5rem; }
+
+    li a { color: #2f5bea; font-weight: 600; text-decoration: none; }
+    li a:hover { text-decoration: underline; }
+    li p { margin: 0.15rem 0 0; color: #5d6672; font-size: 0.9rem; }
+
+    .cta {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.65rem 1.25rem;
+      background: #2f5bea;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .cta:hover { background: #2246c4; }
+  </style>
+</head>
+<body>
+  <h1>Labs — Module 1: HTML, CSS &amp; Tailwind</h1>
+  <p class="lead">
+    Nine hands-on exercises. This is code written <em>to learn from</em>, not a
+    product — the product is <a href="../../v1-html/index.html">the static ShopLite
+    build</a>.
+  </p>
+
+  <h2>Day 1 — Semantic HTML + CSS foundations</h2>
+  <ol>
+    <li>
+      <a href="day-1-portfolio/index.html">Personal page</a>
+      <p>Semantic tags only, zero <code>div</code> elements. Comes with a separate <code>style.css</code>.</p>
+    </li>
+    <li>
+      <a href="day-1-box-model/index.html">Box model</a>
+      <p><code>content-box</code> vs <code>border-box</code> vs <code>margin</code> — one width of 200px, three different results.</p>
+    </li>
+    <li>
+      <a href="day-1-specificity/index.html">Selectors &amp; specificity</a>
+      <p>Six rules fighting over one element. Guess the color before opening the page.</p>
+    </li>
+  </ol>
+
+  <h2>Day 2 — Flexbox &amp; Grid</h2>
+  <ol start="4">
+    <li>
+      <a href="day-2-flex-navbar/index.html">Navbar with Flexbox</a>
+      <p>Four variants: <code>space-between</code>, <code>center</code>, the <code>margin-left: auto</code> trick, and surviving 360px.</p>
+    </li>
+    <li>
+      <a href="day-2-grid-gallery/index.html">Grid gallery</a>
+      <p><code>auto-fill</code> vs <code>auto-fit</code>, <code>minmax()</code>, and <code>span</code>.</p>
+    </li>
+    <li>
+      <a href="day-2-clone-layout/index.html">Rebuild a shop layout</a>
+      <p>Wireframe: Grid for the page frame (<code>grid-template-areas</code>) plus Flex inside each block.</p>
+    </li>
+  </ol>
+
+  <h2>Day 3 — Responsive + polish</h2>
+  <ol start="7">
+    <li>
+      <a href="day-3-mobile-first/index.html">Mobile-first</a>
+      <p><code>min-width</code> media queries at 640/1024 compared with <code>auto-fill</code> and <code>clamp()</code>.</p>
+    </li>
+    <li>
+      <a href="day-3-css-vars-dark/index.html">CSS variables &amp; dark mode</a>
+      <p>Dark mode by swapping nine tokens, without editing a single rule.</p>
+    </li>
+    <li>
+      <a href="day-3-tailwind-card/index.html">Card: plain CSS vs Tailwind</a>
+      <p>Two identical cards plus a table mapping 16 utility classes to CSS properties.</p>
+    </li>
+  </ol>
+
+  <a class="cta" href="../../v1-html/index.html">Open the static ShopLite build →</a>
+</body>
+</html>
