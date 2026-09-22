@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 3.3 — localStorage</title>
+  <style>
+    :root { color-scheme: light; }
+
+    body {
+      max-width: 60rem;
+      margin-inline: auto;
+      padding: 2.5rem 1rem 4rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: #5d6672; }
+    h3 { font-size: 0.95rem; margin: 1.25rem 0 0.5rem; }
+    p.lead { margin: 0 0 1rem; color: #5d6672; }
+    a { color: #2f5bea; }
+
+    code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.85rem; }
+
+    pre {
+      margin: 0;
+      padding: 0.9rem 1rem;
+      background: #0e1218;
+      border-radius: 10px;
+      color: #e8ecf3;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .panel {
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #e2e7ee;
+      border-radius: 12px;
+    }
+
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #e2e7ee; text-align: left; vertical-align: top; }
+    th { color: #5d6672; font-weight: 600; }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      background: #fff;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: #2f5bea; color: #2f5bea; }
+
+    input, select {
+      padding: 0.45rem 0.7rem;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .note { color: #5d6672; font-size: 0.9rem; }
+    .back { display: inline-block; margin-top: 2.5rem; }
+  </style>
+</head>
+<body>
+  <h1>A cart that survives a reload</h1>
+  <p class="lead">
+    <code>localStorage</code> stores strings and nothing else, so objects go in
+    through <code>JSON.stringify</code> and come back through
+    <code>JSON.parse</code>. Add a few items, then reload the page — or open it
+    in a second tab and watch both stay in step.
+  </p>
+
+  <div class="row">
+    <button type="button" data-add="1">Add headphones ($99.99)</button>
+    <button type="button" data-add="5">Add keyboard ($46)</button>
+    <button type="button" data-add="6">Add mouse ($23.60)</button>
+    <button type="button" id="reload">Reload the page</button>
+    <button type="button" id="corrupt">Corrupt the stored data</button>
+    <button type="button" id="clear">Clear</button>
+  </div>
+
+  <section class="panel">
+    <h2>Cart</h2>
+    <table>
+      <thead><tr><th>Product</th><th>Unit</th><th>Qty</th><th>Line</th><th></th></tr></thead>
+      <tbody id="lines"></tbody>
+      <tfoot><tr><th colspan="3">Total</th><th id="total">$0.00</th><th></th></tr></tfoot>
+    </table>
+  </section>
+
+  <section class="panel" style="margin-top: 1rem">
+    <h2>What is actually in localStorage</h2>
+    <pre id="raw">—</pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 2 labs</a>
+
+  <script>
+    const CATALOGUE = {
+      1: { id: 1, title: 'Aura X2 Headphones', price: 99.99 },
+      5: { id: 5, title: 'Kite 68 Keyboard', price: 46 },
+      6: { id: 6, title: 'Glide M2 Mouse', price: 23.6 },
+    };
+
+    const KEY = 'lab.cart';
+
+    const linesBox = document.querySelector('#lines');
+    const totalBox = document.querySelector('#total');
+    const raw = document.querySelector('#raw');
+
+    /* --- The two functions the whole lab is about --------------------- */
+
+    function saveCart(cart) {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(cart));
+      } catch (error) {
+        // Private mode and a full quota both throw here.
+        console.warn('could not save the cart:', error.message);
+      }
+    }
+
+    function loadCart() {
+      try {
+        const stored = localStorage.getItem(KEY);
+        if (stored === null) return []; // nothing saved yet is NOT an error
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        // Somebody (or an older version of this code) left invalid JSON here.
+        console.warn('stored cart was unreadable, starting fresh:', error.message);
+        localStorage.removeItem(KEY);
+        return [];
+      }
+    }
+
+    /* --- Cart operations --------------------------------------------- */
+
+    const addToCart = (id) => {
+      const cart = loadCart();
+      const line = cart.find((item) => item.id === Number(id));
+      if (line) line.qty += 1;
+      else cart.push({ ...CATALOGUE[id], qty: 1 });
+      saveCart(cart);
+      render();
+    };
+
+    const setQty = (id, qty) => {
+      const next = loadCart()
+        .map((line) => (line.id === Number(id) ? { ...line, qty: Number(qty) } : line))
+        .filter((line) => line.qty > 0);
+      saveCart(next);
+      render();
+    };
+
+    const removeLine = (id) => {
+      saveCart(loadCart().filter((line) => line.id !== Number(id)));
+      render();
+    };
+
+    const cartTotal = (cart) => cart.reduce((sum, line) => sum + line.price * line.qty, 0);
+
+    /* --- Render ------------------------------------------------------- */
+
+    function render() {
+      const cart = loadCart();
+
+      linesBox.innerHTML = cart.length
+        ? cart
+            .map(
+              (line) => `
+                <tr data-id="${line.id}">
+                  <td>${line.title}</td>
+                  <td>$${line.price.toFixed(2)}</td>
+                  <td><input type="number" min="0" value="${line.qty}" style="width: 4.5rem"></td>
+                  <td>$${(line.price * line.qty).toFixed(2)}</td>
+                  <td><button type="button" data-remove>Remove</button></td>
+                </tr>`
+            )
+            .join('')
+        : '<tr><td colspan="5" class="note">The cart is empty.</td></tr>';
+
+      totalBox.textContent = `$${cartTotal(cart).toFixed(2)}`;
+      raw.textContent = localStorage.getItem(KEY) ?? '(nothing stored)';
+    }
+
+    /* --- Events ------------------------------------------------------- */
+
+    document.querySelector('.row').addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      if (!button) return;
+
+      if (button.dataset.add) addToCart(button.dataset.add);
+      if (button.id === 'reload') location.reload();
+      if (button.id === 'clear') { localStorage.removeItem(KEY); render(); }
+      if (button.id === 'corrupt') {
+        // Exactly what a half-finished write, or a curious user with DevTools,
+        // leaves behind. loadCart() has to survive it.
+        localStorage.setItem(KEY, '{"oops": not json');
+        render();
+      }
+    });
+
+    linesBox.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-remove]');
+      if (button) removeLine(button.closest('[data-id]').dataset.id);
+    });
+
+    linesBox.addEventListener('change', (event) => {
+      const field = event.target.closest('input[type="number"]');
+      if (field) setQty(field.closest('[data-id]').dataset.id, field.value);
+    });
+
+    // Fired when ANOTHER tab writes to localStorage — never in the tab that wrote.
+    window.addEventListener('storage', (event) => {
+      if (event.key === KEY) render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

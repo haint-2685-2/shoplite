@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 2.1 — Render from data</title>
+  <style>
+    :root { color-scheme: light; }
+
+    body {
+      max-width: 60rem;
+      margin-inline: auto;
+      padding: 2.5rem 1rem 4rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: #5d6672; }
+    h3 { font-size: 0.95rem; margin: 1.25rem 0 0.5rem; }
+    p.lead { margin: 0 0 1rem; color: #5d6672; }
+    a { color: #2f5bea; }
+
+    code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.85rem; }
+
+    pre {
+      margin: 0;
+      padding: 0.9rem 1rem;
+      background: #0e1218;
+      border-radius: 10px;
+      color: #e8ecf3;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .panel {
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #e2e7ee;
+      border-radius: 12px;
+    }
+
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #e2e7ee; text-align: left; vertical-align: top; }
+    th { color: #5d6672; font-weight: 600; }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      background: #fff;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: #2f5bea; color: #2f5bea; }
+
+    input, select {
+      padding: 0.45rem 0.7rem;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .note { color: #5d6672; font-size: 0.9rem; }
+    .back { display: inline-block; margin-top: 2.5rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.75rem;
+      background: #fff;
+      border: 1px solid #e2e7ee;
+      border-radius: 12px;
+    }
+
+    .card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; }
+    .card h3 { margin: 0; font-size: 0.95rem; }
+    .card .tag { color: #5d6672; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .card .price { margin: 0; font-weight: 700; }
+    .card button { margin-top: auto; }
+
+    .empty {
+      padding: 2rem 1rem;
+      border: 1px dashed #d7dde6;
+      border-radius: 12px;
+      color: #5d6672;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rendering a grid from an array</h1>
+  <p class="lead">
+    No card is written by hand. <code>productCardHTML(p)</code> returns the
+    markup for one product, <code>renderProducts(list)</code> maps the array
+    through it and joins the result into a single <code>innerHTML</code> write.
+  </p>
+
+  <div class="row">
+    <button type="button" data-render="all">Render all</button>
+    <button type="button" data-render="cheap">Only under $100</button>
+    <button type="button" data-render="sorted">Sorted by price</button>
+    <button type="button" data-render="none">Render an empty list</button>
+    <span class="note" id="count"></span>
+  </div>
+
+  <ul class="grid" id="grid"></ul>
+  <div id="status"></div>
+
+  <a class="back" href="../index.html">&larr; Back to the module 2 labs</a>
+
+  <script>
+    const products = [
+      { id: 1, title: 'Aura X2 Headphones', price: 99.99, category: 'audio', rating: 4.8 },
+      { id: 2, title: 'Nova 12 Pro Smartphone', price: 519, category: 'smartphones', rating: 4.7 },
+      { id: 3, title: 'Zenbook Air 14', price: 860, category: 'laptops', rating: 4.9 },
+      { id: 4, title: 'Pulse 3 Smartwatch', price: 75.5, category: 'watches', rating: 4.5 },
+      { id: 5, title: 'Kite 68 Keyboard', price: 46, category: 'accessories', rating: 4.6 },
+      { id: 6, title: 'Glide M2 Mouse', price: 23.6, category: 'accessories', rating: 4.4 },
+      { id: 7, title: 'Boom Mini Speaker', price: 31.2, category: 'audio', rating: 4.3 },
+      { id: 8, title: 'Paper 7 E-Reader', price: 138, category: 'e-readers', rating: 4.8 },
+    ];
+
+    const grid = document.querySelector('#grid');
+    const status = document.querySelector('#status');
+    const count = document.querySelector('#count');
+
+    const formatPrice = (n) => `$${n.toFixed(2)}`;
+
+    // Anything from outside the file has to be escaped before it goes into
+    // innerHTML — a title containing "<" would otherwise inject markup.
+    const escapeHTML = (value) =>
+      String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+
+    /* One product -> one string. Nothing else in the file knows this shape. */
+    function productCardHTML({ id, title, price, category, rating }) {
+      return `
+        <li>
+          <article class="card" data-id="${id}">
+            <img src="https://picsum.photos/seed/lab-${id}/300/300" alt="${escapeHTML(title)}" loading="lazy">
+            <span class="tag">${escapeHTML(category)}</span>
+            <h3>${escapeHTML(title)}</h3>
+            <p class="note">★ ${rating}</p>
+            <p class="price">${formatPrice(price)}</p>
+            <button type="button">Add to cart</button>
+          </article>
+        </li>`;
+    }
+
+    /* A list -> the whole grid, in ONE write to the DOM. */
+    function renderProducts(list) {
+      count.textContent = `${list.length} product(s)`;
+
+      if (list.length === 0) {
+        grid.innerHTML = '';
+        status.innerHTML = '<p class="empty">No products to show.</p>';
+        return;
+      }
+
+      status.innerHTML = '';
+      grid.innerHTML = list.map(productCardHTML).join('');
+    }
+
+    const views = {
+      all: () => products,
+      cheap: () => products.filter((p) => p.price < 100),
+      sorted: () => [...products].sort((a, b) => a.price - b.price),
+      none: () => [],
+    };
+
+    // One listener for all four buttons (see lab 2.2 for why).
+    document.querySelector('.row').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-render]');
+      if (button) renderProducts(views[button.dataset.render]());
+    });
+
+    renderProducts(products);
+  </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Module 2 Labs — JavaScript</title>
+  <style>
+    body {
+      max-width: 52rem;
+      margin-inline: auto;
+      padding: 2.5rem 1rem 4rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: #5d6672; }
+    p.lead { margin: 0 0 1rem; color: #5d6672; }
+
+    ol { display: flex; flex-direction: column; gap: 0.75rem; margin: 0; padding-left: 1.5rem; }
+
+    li a { color: #2f5bea; font-weight: 600; text-decoration: none; }
+    li a:hover { text-decoration: underline; }
+    li p { margin: 0.15rem 0 0; color: #5d6672; font-size: 0.9rem; }
+
+    .callout {
+      margin: 1.5rem 0 0;
+      padding: 0.85rem 1rem;
+      background: #f4f7ff;
+      border: 1px solid #ccd9ff;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+
+    code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.85em; }
+
+    .cta {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.65rem 1.25rem;
+      background: #2f5bea;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .cta:hover { background: #2246c4; }
+  </style>
+</head>
+<body>
+  <h1>Labs — Module 2: JavaScript</h1>
+  <p class="lead">
+    Ten hands-on exercises. This is code written <em>to learn from</em>, not a
+    product — the product is <a href="../../v2-js/index.html">ShopLite, now
+    rendered by JavaScript</a>.
+  </p>
+
+  <p class="callout">
+    <strong>Run these over a server, not from the file system.</strong> Lab 1.4
+    uses <code>&lt;script type="module"&gt;</code> and lab 3.2 calls a real API;
+    both are blocked on <code>file://</code>. From the repository root:
+    <code>npx serve</code>, then open
+    <code>http://localhost:3000/labs/module-2/</code>.
+  </p>
+
+  <h2>Day 1 — Modern JavaScript (ES6+)</h2>
+  <ol>
+    <li>
+      <a href="day-1-array-methods/index.html">Array methods</a>
+      <p><code>map</code> / <code>filter</code> / <code>reduce</code> / <code>sort</code> / <code>find</code>, and the same job written as a <code>for</code> loop and as a chain.</p>
+    </li>
+    <li>
+      <a href="day-1-destructuring-spread/index.html">Destructuring, spread &amp; rest</a>
+      <p>Renaming, defaults, nesting, safe copies — and the one-level-deep catch that spread does not solve.</p>
+    </li>
+    <li>
+      <a href="day-1-this-arrow/index.html"><code>this</code> &amp; arrow functions</a>
+      <p>One object, two methods, four ways of calling them. Then the <code>setTimeout</code> bug and its four fixes.</p>
+    </li>
+    <li>
+      <a href="day-1-modules/index.html">ES modules</a>
+      <p>Four files, <code>export</code> / <code>import</code>, default vs named. Needs a server.</p>
+    </li>
+  </ol>
+
+  <h2>Day 2 — DOM, events &amp; dynamic rendering</h2>
+  <ol start="5">
+    <li>
+      <a href="day-2-render-from-data/index.html">Render from data</a>
+      <p><code>productCardHTML(p)</code> plus <code>list.map(...).join('')</code> — one write to the DOM, no hand-written cards.</p>
+    </li>
+    <li>
+      <a href="day-2-event-delegation/index.html">Event delegation</a>
+      <p>Per-button listeners on the left, one container listener on the right. Add a row and see which side still works.</p>
+    </li>
+    <li>
+      <a href="day-2-live-search/index.html">Real-time search</a>
+      <p>Filtering on every <code>input</code> event, with a highlighted match and a proper empty state.</p>
+    </li>
+  </ol>
+
+  <h2>Day 3 — Async, Fetch &amp; localStorage</h2>
+  <ol start="8">
+    <li>
+      <a href="day-3-async-await/index.html">Promises &amp; async/await</a>
+      <p>The three states, <code>then</code>/<code>catch</code> next to <code>await</code>, sequential vs <code>Promise.all</code>, and the event loop.</p>
+    </li>
+    <li>
+      <a href="day-3-fetch-real/index.html">Fetch &amp; error states</a>
+      <p>Why <code>fetch</code> does not throw on 404, and the loading / data / error screens every request needs.</p>
+    </li>
+    <li>
+      <a href="day-3-localstorage/index.html">localStorage</a>
+      <p>A cart that survives a reload — including a button that corrupts the stored JSON so you can watch it recover.</p>
+    </li>
+  </ol>
+
+  <a class="cta" href="../../v2-js/index.html">Open ShopLite v2 →</a>
+</body>
+</html>

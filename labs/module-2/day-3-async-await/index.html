@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 3.1 — Promises &amp; async/await</title>
+  <style>
+    :root { color-scheme: light; }
+
+    body {
+      max-width: 60rem;
+      margin-inline: auto;
+      padding: 2.5rem 1rem 4rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: #5d6672; }
+    h3 { font-size: 0.95rem; margin: 1.25rem 0 0.5rem; }
+    p.lead { margin: 0 0 1rem; color: #5d6672; }
+    a { color: #2f5bea; }
+
+    code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.85rem; }
+
+    pre {
+      margin: 0;
+      padding: 0.9rem 1rem;
+      background: #0e1218;
+      border-radius: 10px;
+      color: #e8ecf3;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .panel {
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #e2e7ee;
+      border-radius: 12px;
+    }
+
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #e2e7ee; text-align: left; vertical-align: top; }
+    th { color: #5d6672; font-weight: 600; }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      background: #fff;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: #2f5bea; color: #2f5bea; }
+
+    input, select {
+      padding: 0.45rem 0.7rem;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .note { color: #5d6672; font-size: 0.9rem; }
+    .back { display: inline-block; margin-top: 2.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Promises, then/catch and async/await</h1>
+  <p class="lead">
+    A promise is a box that will hold either a value or an error, later. These
+    examples use a fake <code>delay()</code> instead of the network so the
+    timings are obvious.
+  </p>
+
+  <div class="row">
+    <button type="button" id="run">Run everything</button>
+    <span class="note">Watch the order the lines appear in — not the order they are written in.</span>
+  </div>
+
+  <section class="panel">
+    <h2>Output</h2>
+    <pre id="out">Press “Run everything”.</pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 2 labs</a>
+
+  <script>
+    const out = document.querySelector('#out');
+    let started = 0;
+    const log = (line) => {
+      const at = String(Math.round(performance.now() - started)).padStart(4, ' ');
+      out.textContent += `${at}ms  ${line}\n`;
+    };
+
+    /* A promise that resolves after ms, standing in for a slow request. */
+    const delay = (ms, value) => new Promise((resolve) => setTimeout(() => resolve(value), ms));
+
+    /* And one that fails, to exercise the error path. */
+    const failAfter = (ms, message) =>
+      new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms));
+
+    async function run() {
+      out.textContent = '';
+      started = performance.now();
+
+      /* --- 1. The three states ---------------------------------------- */
+      const pending = delay(300, 'done');
+      log(`1. a fresh promise is PENDING: ${pending}`);
+      log(`   awaiting it gives the value: ${await pending}  (now FULFILLED)`);
+
+      try {
+        await failAfter(100, 'the server said no');
+      } catch (error) {
+        log(`   a REJECTED promise throws where you await it: "${error.message}"`);
+      }
+
+      /* --- 2. then/catch vs async/await ------------------------------- */
+      log('');
+      log('2. the same thing, written both ways');
+
+      await delay(200, 'A')
+        .then((value) => log(`   .then()  received ${value}`))
+        .catch((error) => log(`   .catch() received ${error.message}`))
+        .finally(() => log('   .finally() always runs'));
+
+      try {
+        const value = await delay(200, 'A');
+        log(`   await   received ${value}`);
+      } catch (error) {
+        log(`   catch   received ${error.message}`);
+      } finally {
+        log('   finally always runs here too');
+      }
+
+      /* --- 3. Sequential vs parallel ---------------------------------- */
+      log('');
+      log('3. three 400ms calls, one after another');
+      const t1 = performance.now();
+      await delay(400, 1);
+      await delay(400, 2);
+      await delay(400, 3);
+      log(`   sequential took ${Math.round(performance.now() - t1)}ms — each await BLOCKS the next line`);
+
+      log('   the same three, started together');
+      const t2 = performance.now();
+      const [a, b, c] = await Promise.all([delay(400, 1), delay(400, 2), delay(400, 3)]);
+      log(`   Promise.all took ${Math.round(performance.now() - t2)}ms and returned [${a}, ${b}, ${c}]`);
+
+      /* Promise.all rejects as soon as ANY of them rejects. */
+      try {
+        await Promise.all([delay(100, 'ok'), failAfter(50, 'one bad apple')]);
+      } catch (error) {
+        log(`   Promise.all rejects on the first failure: "${error.message}"`);
+      }
+
+      /* allSettled waits for all of them and reports each outcome. */
+      const settled = await Promise.allSettled([delay(50, 'ok'), failAfter(50, 'nope')]);
+      log(`   Promise.allSettled: ${settled.map((r) => r.status).join(', ')}`);
+
+      /* --- 4. The event loop ------------------------------------------ */
+      log('');
+      log('4. why "async" does not mean "parallel": JS runs one thing at a time');
+      log('   A — synchronous, runs now');
+      setTimeout(() => log('   C — macrotask (setTimeout), runs last'), 0);
+      Promise.resolve().then(() => log('   B — microtask (promise), runs before timeouts'));
+      log('   A2 — still synchronous, still before B');
+    }
+
+    document.querySelector('#run').addEventListener('click', run);
+  </script>
+</body>
+</html>
