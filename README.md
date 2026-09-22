@@ -7,25 +7,29 @@ không làm lại từ đầu mỗi lần.
 | Module | Công nghệ | Thư mục | Trạng thái |
 | --- | --- | --- | --- |
 | 1 | HTML / CSS / Tailwind | `v1-html/` | ✅ xong (tag `v1-html`) |
-| 2 | JavaScript | `v2-js/` | ⏳ chưa bắt đầu |
+| 2 | JavaScript | `v2-js/` | ✅ xong (tag `v2-js`) |
 | 3 | TypeScript + Vite | `v3-ts/` | ⏳ |
 | 4 | ReactJS | `v4-react/` | ⏳ |
 | 5 | Next.js | `v5-next/` | ⏳ |
 
 ## Chạy local
 
-Không cần build tool ở module 1 — mở file trực tiếp là được:
+**Từ module 2 trở đi bắt buộc chạy qua server tĩnh.** `v2-js/` dùng
+`<script type="module">` và gọi API — mở bằng `file://` sẽ chết ngay ở console
+với lỗi CORS.
+
+```bash
+npx serve .
+# http://localhost:3000/v1-html/index.html   module 1 (tĩnh)
+# http://localhost:3000/v2-js/index.html     module 2
+# http://localhost:3000/labs/module-2/       10 lab của module 2
+```
+
+Riêng `v1-html/` vẫn mở trực tiếp được vì không có JavaScript:
 
 ```bash
 start v1-html/index.html      # Windows
 open  v1-html/index.html      # macOS
-```
-
-Hoặc chạy qua server tĩnh (nên dùng, để đường dẫn tương đối giống môi trường thật):
-
-```bash
-npx serve .
-# rồi mở http://localhost:3000/v1-html/index.html
 ```
 
 ## Cấu trúc thư mục
@@ -33,8 +37,11 @@ npx serve .
 ```
 shoplite/
 ├─ docs/                     tài liệu lộ trình (bản lưu offline của S*Learn)
-├─ labs/module-1/            9 bài tập luyện tay — code để HỌC, không phải sản phẩm
-│  └─ index.html             trang mục lục mở tất cả lab
+├─ labs/
+│  ├─ module-1/              9 bài tập HTML/CSS
+│  └─ module-2/              10 bài tập JavaScript
+│     └─ index.html          trang mục lục mở tất cả lab
+├─ v2-js/                    DELIVERABLE module 2: ShopLite bản động (xem bên dưới)
 └─ v1-html/                  DELIVERABLE module 1: ShopLite bản tĩnh
    ├─ index.html             danh sách sản phẩm
    ├─ product.html           chi tiết sản phẩm
@@ -50,9 +57,11 @@ shoplite/
 Hai vùng tách biệt có chủ đích:
 
 - **`labs/`** — bài tập một lần, mỗi lab một thư mục tự chứa, CSS viết luôn trong
-  `<style>`. Bẩn cũng được, miễn chứng minh được một khái niệm.
-- **`v1-html/`** — sản phẩm thật, sẽ được module 2 kế thừa. CSS tách 4 file, không
-  có giá trị cứng, không trộn Tailwind (Tailwind chỉ xuất hiện trong lab 3.3).
+  `<style>` và JS trong `<script>`. Bẩn cũng được, miễn chứng minh được một khái
+  niệm.
+- **`v1-html/` và `v2-js/`** — sản phẩm thật. Mỗi module copy thư mục của module
+  trước rồi tiến hóa tiếp, nên bản cũ vẫn mở được để đối chiếu. CSS tách 4 file,
+  không có giá trị cứng, không trộn Tailwind (Tailwind chỉ xuất hiện trong lab 3.3).
 
 **Thứ tự nạp CSS bắt buộc:** `tokens → base → layout → components`. Nạp bằng 4 thẻ
 `<link>` (không dùng `@import` trong CSS vì nó nạp tuần tự, chậm).
@@ -70,6 +79,10 @@ trong suốt được khai báo sẵn để hover không làm layout nhảy.
 - Không dùng `<div>` nếu còn thẻ semantic đúng nghĩa hơn.
 - Header/footer bị lặp lại ở cả 3 trang: HTML thuần không có cách tránh. Giữ markup
   **giống hệt nhau** giữa các trang để module 4 cắt thành component React được ngay.
+- JavaScript: `const` mặc định, không dùng `var`; mỗi file một việc và export ra
+  ngoài bằng ES module; hàm xử lý dữ liệu phải **thuần** (không đụng DOM, không sửa
+  tham số đầu vào) để module 3–5 tái dùng nguyên vẹn.
+- Mọi chuỗi lấy từ API đều đi qua `escapeHTML()` trước khi vào `innerHTML`.
 
 ## Module 1 — đối chiếu tiêu chí "done"
 
@@ -89,12 +102,88 @@ trong suốt được khai báo sẵn để hover không làm layout nhảy.
 | Responsive mượt 360px → ≥1280px | `clamp()` cho typography, mobile-first ở mọi media query |
 
 Dark mode ở module 1 không lưu được lựa chọn khi chuyển trang (cần
-`localStorage` → module 2).
+`localStorage`) — module 2 đã xử lý, xem bên dưới.
+
+## Module 2 — JavaScript
+
+`v2-js/` bắt đầu bằng bản copy nguyên vẹn của `v1-html/`: cùng 4 file CSS, cùng
+markup header/footer. Thay đổi duy nhất về giao diện là **toàn bộ card sản phẩm
+đã bị xóa khỏi HTML** — giờ JS dựng ra hết.
+
+```
+v2-js/
+├─ index.html      lưới sản phẩm (rỗng trong HTML, JS đổ dữ liệu vào)
+├─ product.html    chi tiết — một file phục vụ mọi sản phẩm qua ?id=
+├─ cart.html       giỏ hàng đọc từ localStorage
+├─ css/            4 file của module 1 + phần thêm cuối components.css
+│                  (skeleton, empty/error state, toast, ô sort)
+└─ js/
+   ├─ data.js        12 sản phẩm mẫu, đúng shape DummyJSON — nguồn dự phòng
+   ├─ products.js    HÀM THUẦN: filterByKeyword, sortByPrice, applyFilters...
+   ├─ api.js         getJSON (có kiểm tra res.ok + timeout), fetchProducts...
+   ├─ storage.js     localStorage bọc try/catch, không bao giờ ném ra ngoài
+   ├─ cart.js        addToCart, removeFromCart, updateQty, getCartTotal
+   ├─ ui.js          productCardHTML, renderProducts, badge, theme, toast
+   ├─ home.js        điều khiển index.html
+   ├─ detail.js      điều khiển product.html
+   └─ cart-page.js   điều khiển cart.html
+```
+
+**Luồng dữ liệu** — mỗi trang chỉ có một `state` và một `render()`. Sự kiện sửa
+state rồi gọi lại `render()`; không có chỗ nào vá DOM thủ công:
+
+```
+fetch (api.js) ─► state.all ─► applyFilters(state) ─► renderProducts() ─► innerHTML
+                                      ▲                                      │
+                          input / click / change ◄──── event delegation ◄─────┘
+```
+
+**Ba quyết định đáng nhớ:**
+
+- **Dữ liệu thật, có đường lui.** Sản phẩm lấy từ `GET /products` của DummyJSON.
+  Nếu fetch hỏng (rớt mạng, API chết), trang hiện thông báo lỗi kèm nút thử lại
+  *và* vẫn render `data.js` — không bao giờ có màn hình trắng.
+- **`fetch` không tự ném lỗi khi 404/500.** Mọi request đi qua `getJSON()`, nơi
+  `res.ok` được kiểm tra bằng tay và `AbortController` cắt request treo sau 10s.
+- **Một listener cho cả lưới.** Card bị tạo lại sau mỗi lần render nên listener
+  gắn vào từng nút sẽ chết theo. Listener nằm ở container, `event.target.closest(
+  '[data-id]')` truy ngược ra sản phẩm.
+
+**Khóa trong localStorage:**
+
+| Khóa | Nội dung |
+| --- | --- |
+| `shoplite.cart` | mảng dòng giỏ `{ id, title, price, thumbnail, category, qty }` |
+| `shoplite.theme` | `"dark"` / `"light"` — dark mode giờ nhớ được qua các trang |
+| `shoplite.categories` | danh mục API trả về, để 2 trang kia vẽ nav mà không gọi lại API |
+
+Dữ liệu hỏng trong localStorage (JSON sai, ai đó sửa tay trong DevTools) bị bắt ở
+`storage.js`, xóa khóa rồi trả về giá trị mặc định.
+
+### Module 2 — đối chiếu tiêu chí "done"
+
+| Tiêu chí | Hiện thực ở đâu |
+| --- | --- |
+| `products.filter(...).map(...)` viết trơn tay | `js/products.js`, `labs/module-2/day-1-array-methods/` |
+| Giải thích được arrow function tránh lỗi `this` | `labs/module-2/day-1-this-arrow/` — 4 cách gọi + 4 cách sửa |
+| `data.js` export và import được qua ES module | `js/data.js` + `labs/module-2/day-1-modules/` (4 file) |
+| Trang sản phẩm render 100% từ JS | `index.html` không còn `.product-card` nào |
+| Tìm kiếm lọc mượt khi gõ, có trạng thái rỗng | `js/home.js` — sự kiện `input` + `stateHTML()` |
+| Một listener duy nhất cho mọi nút "Add to cart" | `js/home.js` — listener trên `#product-grid` |
+| Sản phẩm load từ API thật, có loading + xử lý lỗi | `js/api.js` + skeleton trong `js/ui.js` |
+| Trang chi tiết mở đúng sản phẩm theo `?id=` | `js/detail.js` |
+| Giỏ hàng sống sót qua reload, tăng/giảm/xóa đúng | `js/cart.js` + `js/cart-page.js` |
+| Badge khớp tổng số lượng | `updateCartBadge()`, chạy lại qua sự kiện `cart:change` |
+
+Dark mode của module 1 chỉ là checkbox CSS nên quên lựa chọn mỗi lần đổi trang.
+Module 2 giữ nguyên checkbox và CSS đó, JS chỉ làm thêm việc nhớ — đúng tinh thần
+"tiến hóa, không làm lại".
 
 ## Ảnh sản phẩm
 
-Đang dùng ảnh placeholder từ `picsum.photos` (cần mạng). Module 2 sẽ thay bằng dữ
-liệu thật từ [DummyJSON](https://dummyjson.com/docs/products).
+`v1-html/` dùng ảnh placeholder từ `picsum.photos`. `v2-js/` đã chuyển sang ảnh và
+dữ liệu thật của [DummyJSON](https://dummyjson.com/docs/products); chỉ còn
+`js/data.js` (dữ liệu dự phòng khi offline) là vẫn trỏ về `picsum.photos`.
 
 ## Tài liệu
 

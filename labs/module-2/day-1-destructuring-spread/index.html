@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.2 — Destructuring, spread &amp; rest</title>
+  <style>
+    :root { color-scheme: light; }
+
+    body {
+      max-width: 60rem;
+      margin-inline: auto;
+      padding: 2.5rem 1rem 4rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: #5d6672; }
+    h3 { font-size: 0.95rem; margin: 1.25rem 0 0.5rem; }
+    p.lead { margin: 0 0 1rem; color: #5d6672; }
+    a { color: #2f5bea; }
+
+    code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.85rem; }
+
+    pre {
+      margin: 0;
+      padding: 0.9rem 1rem;
+      background: #0e1218;
+      border-radius: 10px;
+      color: #e8ecf3;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .panel {
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #e2e7ee;
+      border-radius: 12px;
+    }
+
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #e2e7ee; text-align: left; vertical-align: top; }
+    th { color: #5d6672; font-weight: 600; }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      background: #fff;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: #2f5bea; color: #2f5bea; }
+
+    input, select {
+      padding: 0.45rem 0.7rem;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .note { color: #5d6672; font-size: 0.9rem; }
+    .back { display: inline-block; margin-top: 2.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Destructuring, spread and rest</h1>
+  <p class="lead">
+    Pulling values out of objects and arrays, copying without sharing, and
+    functions that take however many arguments you throw at them.
+  </p>
+
+  <section class="panel">
+    <h2>Results</h2>
+    <pre id="out"></pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 2 labs</a>
+
+  <script>
+    const product = {
+      id: 1,
+      title: 'Aura X2 Headphones',
+      price: 99.99,
+      category: 'audio',
+      meta: { rating: 4.8, reviews: 126 },
+    };
+
+    const out = document.querySelector('#out');
+    const show = (label, value) => {
+      out.textContent += `${label}\n  ${JSON.stringify(value)}\n\n`;
+      console.log(label, value);
+    };
+
+    /* --- Object destructuring ---------------------------------------- */
+    const { title, price } = product;
+    show('const { title, price }', { title, price });
+
+    // rename + default for a key that does not exist
+    const { title: name, discount = 0 } = product;
+    show('rename and default', { name, discount });
+
+    // nested
+    const { meta: { rating, reviews } } = product;
+    show('nested destructuring', { rating, reviews });
+
+    // rest: "everything I did not name"
+    const { id, ...withoutId } = product;
+    show('rest of the object', withoutId);
+
+    /* --- Array destructuring ----------------------------------------- */
+    const prices = [99.99, 519, 860, 75.5, 46];
+    const [first, second, ...rest] = prices;
+    show('[first, second, ...rest]', { first, second, rest });
+
+    // skipping, and swapping without a temp variable
+    const [, , third] = prices;
+    let a = 'left';
+    let b = 'right';
+    [a, b] = [b, a];
+    show('skip a slot / swap without a temp', { third, a, b });
+
+    /* --- Spread: copies, never references ---------------------------- */
+    const discounted = { ...product, discounted: true, price: 79.99 };
+    show('spread + override', { price: discounted.price, discounted: discounted.discounted });
+    show('the original is untouched', product.price);
+
+    const merged = { ...{ shipping: 'free', gift: false }, ...{ gift: true } };
+    show('merge: the LAST spread wins', merged);
+
+    const copy = [...prices];
+    copy.push(1);
+    show('array copy is independent', { copy: copy.length, prices: prices.length });
+
+    // The catch worth knowing: spread copies one level deep only.
+    const shallow = { ...product };
+    shallow.meta.rating = 1;
+    show('shallow copy shares nested objects', product.meta.rating);
+    product.meta.rating = 4.8; // put it back
+
+    /* --- Default + rest parameters ----------------------------------- */
+    function priceTag(value, currency = '$', decimals = 2) {
+      return `${currency}${value.toFixed(decimals)}`;
+    }
+    show('default parameters', [priceTag(99.9), priceTag(99.9, 'EUR '), priceTag(99.9, '$', 0)]);
+
+    // Rest parameters: gather every extra argument into one real array.
+    function cartTotal(...amounts) {
+      return amounts.reduce((sum, n) => sum + n, 0);
+    }
+    show('rest parameters', [cartTotal(), cartTotal(10), cartTotal(10, 20, 5.5)]);
+    show('spread an array INTO a call', cartTotal(...prices));
+
+    // Destructuring in the parameter list — the pattern used all over ShopLite.
+    const summarise = ({ title, price, category = 'misc' }) => `${title} (${category}) — $${price}`;
+    show('destructured parameter', summarise(product));
+  </script>
+</body>
+</html>

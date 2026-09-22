@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 3.2 — Fetch, status codes &amp; error states</title>
+  <style>
+    :root { color-scheme: light; }
+
+    body {
+      max-width: 60rem;
+      margin-inline: auto;
+      padding: 2.5rem 1rem 4rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: #5d6672; }
+    h3 { font-size: 0.95rem; margin: 1.25rem 0 0.5rem; }
+    p.lead { margin: 0 0 1rem; color: #5d6672; }
+    a { color: #2f5bea; }
+
+    code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.85rem; }
+
+    pre {
+      margin: 0;
+      padding: 0.9rem 1rem;
+      background: #0e1218;
+      border-radius: 10px;
+      color: #e8ecf3;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .panel {
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #e2e7ee;
+      border-radius: 12px;
+    }
+
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #e2e7ee; text-align: left; vertical-align: top; }
+    th { color: #5d6672; font-weight: 600; }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      background: #fff;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: #2f5bea; color: #2f5bea; }
+
+    input, select {
+      padding: 0.45rem 0.7rem;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .note { color: #5d6672; font-size: 0.9rem; }
+    .back { display: inline-block; margin-top: 2.5rem; }
+
+    .skeleton-row { height: 1rem; margin-bottom: 0.5rem; background: linear-gradient(90deg,#eceff4,#e2e7ee,#eceff4); background-size: 200% 100%; border-radius: 6px; animation: sweep 1.3s infinite; }
+    @keyframes sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+    .error { padding: 0.75rem 1rem; border: 1px solid #d13b3b; border-radius: 10px; color: #d13b3b; }
+    ul.plain { margin: 0; padding-left: 1.1rem; }
+  </style>
+</head>
+<body>
+  <h1>Fetching real data, and the three UI states</h1>
+  <p class="lead">
+    Every request has three possible screens: <strong>loading</strong>,
+    <strong>data</strong>, <strong>error</strong>. Skip one and users get a blank
+    page. The buttons below force each of them.
+  </p>
+
+  <div class="row">
+    <button type="button" data-case="ok">GET /products (real)</button>
+    <button type="button" data-case="404">GET /products/99999 (404)</button>
+    <button type="button" data-case="offline">Simulate no network</button>
+    <button type="button" data-case="slow">Slow request (timeout after 2s)</button>
+  </div>
+
+  <section class="panel">
+    <h2>State</h2>
+    <div id="view"><p class="note">Pick a button above.</p></div>
+  </section>
+
+  <section class="panel" style="margin-top: 1rem">
+    <h2>What happened</h2>
+    <pre id="log">—</pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 2 labs</a>
+
+  <script>
+    const view = document.querySelector('#view');
+    const log = document.querySelector('#log');
+
+    const write = (line) => { log.textContent += line + '\n'; };
+
+    /**
+     * fetch() only rejects when the request itself fails — no network, DNS,
+     * CORS, an abort. A 404 or a 500 is a perfectly successful request that
+     * happens to carry a bad status, so res.ok has to be checked by hand.
+     */
+    async function getJSON(url, { timeout = 8000 } = {}) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeout);
+
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        write(`response: status ${res.status}, res.ok = ${res.ok}`);
+
+        if (!res.ok) throw new Error(`Request failed: ${res.status} ${res.statusText}`);
+        return await res.json();
+      } catch (error) {
+        if (error.name === 'AbortError') throw new Error('The request timed out.');
+        throw error;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    const urls = {
+      ok: 'https://dummyjson.com/products?limit=6&select=title,price,category',
+      404: 'https://dummyjson.com/products/99999',
+      offline: 'https://dummyjson.invalid/products',
+      slow: 'https://dummyjson.com/products?limit=100&delay=4000',
+    };
+
+    async function load(kind) {
+      log.textContent = '';
+      write(`GET ${urls[kind]}`);
+
+      // 1. LOADING — painted before the await, never after.
+      view.innerHTML = '<div class="skeleton-row"></div>'.repeat(5);
+
+      try {
+        const data = await getJSON(urls[kind], { timeout: kind === 'slow' ? 2000 : 8000 });
+        const items = data.products ?? [data];
+
+        // 2. DATA
+        view.innerHTML = `
+          <p class="note">${items.length} item(s) received</p>
+          <ul class="plain">
+            ${items.map((p) => `<li>${p.title} — $${p.price}</li>`).join('')}
+          </ul>`;
+        write('rendered the data state');
+      } catch (error) {
+        // 3. ERROR — a message and a way out, never a blank screen.
+        view.innerHTML = `
+          <div class="error">
+            <p><strong>Could not load the products</strong></p>
+            <p>${error.message}</p>
+            <button type="button" data-case="${kind}">Try again</button>
+          </div>`;
+        write(`caught: ${error.name} — ${error.message}`);
+        write('rendered the error state');
+      }
+    }
+
+    // One delegated listener covers the toolbar AND the retry button that
+    // only exists once an error has been rendered.
+    document.body.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-case]');
+      if (button) load(button.dataset.case);
+    });
+  </script>
+</body>
+</html>

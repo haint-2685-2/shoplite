@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 2.2 — Event delegation</title>
+  <style>
+    :root { color-scheme: light; }
+
+    body {
+      max-width: 60rem;
+      margin-inline: auto;
+      padding: 2.5rem 1rem 4rem;
+      background-color: #fbfbfc;
+      color: #1a1f27;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+
+    h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+    h2 { font-size: 1.05rem; margin: 2rem 0 0.75rem; color: #5d6672; }
+    h3 { font-size: 0.95rem; margin: 1.25rem 0 0.5rem; }
+    p.lead { margin: 0 0 1rem; color: #5d6672; }
+    a { color: #2f5bea; }
+
+    code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.85rem; }
+
+    pre {
+      margin: 0;
+      padding: 0.9rem 1rem;
+      background: #0e1218;
+      border-radius: 10px;
+      color: #e8ecf3;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .panel {
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #e2e7ee;
+      border-radius: 12px;
+    }
+
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #e2e7ee; text-align: left; vertical-align: top; }
+    th { color: #5d6672; font-weight: 600; }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      background: #fff;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: #2f5bea; color: #2f5bea; }
+
+    input, select {
+      padding: 0.45rem 0.7rem;
+      border: 1px solid #d7dde6;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    .note { color: #5d6672; font-size: 0.9rem; }
+    .back { display: inline-block; margin-top: 2.5rem; }
+
+    .columns { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
+    .list { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem; }
+    .list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0.65rem;
+      border: 1px solid #e2e7ee;
+      border-radius: 8px;
+    }
+    .fresh { border-color: #2f5bea; background: #f4f7ff; }
+  </style>
+</head>
+<body>
+  <h1>One listener instead of many</h1>
+  <p class="lead">
+    The left column attaches a listener to every button that existed when the
+    page loaded. The right column has a single listener on the container and
+    works out what was clicked from <code>event.target</code>. Add a row and
+    watch only one of them keep working.
+  </p>
+
+  <div class="row">
+    <button type="button" id="add">Add a product to both lists</button>
+    <button type="button" id="clear">Clear the log</button>
+  </div>
+
+  <div class="columns">
+    <section class="panel">
+      <h2>Direct listeners (one per button)</h2>
+      <p class="note">Bound once, at load. New buttons get nothing.</p>
+      <ul class="list" id="direct"></ul>
+    </section>
+
+    <section class="panel">
+      <h2>Delegated (one listener, on the &lt;ul&gt;)</h2>
+      <p class="note">Bound to the parent, so it catches buttons that do not exist yet.</p>
+      <ul class="list" id="delegated"></ul>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top: 1rem">
+    <h2>Event log</h2>
+    <pre id="log">Click a button above.</pre>
+  </section>
+
+  <section class="panel" style="margin-top: 1rem">
+    <h2>Why it works: bubbling</h2>
+    <p class="note">
+      A click on the button also fires on every ancestor on the way up:
+      <code>button</code> → <code>li</code> → <code>ul</code> → <code>body</code>.
+      The listener on the <code>&lt;ul&gt;</code> therefore sees every click
+      inside it; <code>event.target</code> is what was really clicked, and
+      <code>closest('[data-id]')</code> walks back up to the row it belongs to.
+    </p>
+    <pre id="bubble">Click a delegated row to see the path.</pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 2 labs</a>
+
+  <script>
+    const products = [
+      { id: 1, title: 'Aura X2 Headphones' },
+      { id: 5, title: 'Kite 68 Keyboard' },
+      { id: 6, title: 'Glide M2 Mouse' },
+    ];
+
+    const direct = document.querySelector('#direct');
+    const delegated = document.querySelector('#delegated');
+    const log = document.querySelector('#log');
+    const bubble = document.querySelector('#bubble');
+
+    let nextId = 7;
+    let listeners = 0;
+
+    const rowHTML = ({ id, title }, fresh = false) => `
+      <li class="${fresh ? 'fresh' : ''}" data-id="${id}">
+        <span>${title}</span>
+        <button type="button">Add to cart</button>
+      </li>`;
+
+    const write = (line) => {
+      if (log.dataset.used !== 'yes') { log.textContent = ''; log.dataset.used = 'yes'; }
+      log.textContent += line + '\n';
+    };
+
+    /* --- Column 1: a listener per button, bound once ------------------ */
+    direct.innerHTML = products.map((p) => rowHTML(p)).join('');
+    direct.querySelectorAll('button').forEach((button) => {
+      listeners += 1;
+      button.addEventListener('click', () => {
+        write(`direct    -> ${button.closest('[data-id]').querySelector('span').textContent}`);
+      });
+    });
+
+    /* --- Column 2: ONE listener on the container ---------------------- */
+    delegated.innerHTML = products.map((p) => rowHTML(p)).join('');
+    delegated.addEventListener('click', (event) => {
+      // Ignore clicks on the gaps between buttons.
+      const button = event.target.closest('button');
+      if (!button) return;
+
+      const row = button.closest('[data-id]');
+      write(`delegated -> ${row.querySelector('span').textContent} (id ${row.dataset.id})`);
+
+      // event.target is the deepest element clicked; currentTarget is the
+      // element the listener is attached to.
+      bubble.textContent =
+        `event.target      = <${event.target.tagName.toLowerCase()}>\n` +
+        `event.currentTarget = <${event.currentTarget.tagName.toLowerCase()}> (the container)\n` +
+        `closest('[data-id]') = row #${row.dataset.id}\n\n` +
+        'bubble path: ' +
+        event.composedPath().slice(0, 5).map((n) => n.tagName ? n.tagName.toLowerCase() : String(n)).join(' -> ');
+    });
+
+    /* --- Adding rows later: the whole point --------------------------- */
+    document.querySelector('#add').addEventListener('click', () => {
+      const product = { id: nextId, title: `Fresh product #${nextId}` };
+      nextId += 1;
+
+      direct.insertAdjacentHTML('beforeend', rowHTML(product, true));
+      delegated.insertAdjacentHTML('beforeend', rowHTML(product, true));
+
+      write(`added "${product.title}" to both lists — the new DIRECT button has no listener`);
+      write(`listeners bound on the left: ${listeners}   on the right: 1`);
+    });
+
+    document.querySelector('#clear').addEventListener('click', () => {
+      log.textContent = 'Click a button above.';
+      log.dataset.used = 'no';
+    });
+  </script>
+</body>
+</html>
