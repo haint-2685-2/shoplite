@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.3 — interface vs type</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1><code>interface</code> vs <code>type</code></h1>
+  <p class="lead">
+    Both describe the shape of an object. <code>interface</code> can be extended
+    and reopened; <code>type</code> can name anything — unions, tuples,
+    intersections, function types. Plus <code>?</code> and <code>readonly</code>,
+    and a reminder that neither survives compilation.
+  </p>
+
+  <section class="panel">
+    <h2>When to use which</h2>
+    <table>
+      <thead><tr><th></th><th><code>interface</code></th><th><code>type</code></th></tr></thead>
+      <tbody>
+        <tr><td>Object shape</td><td>✅ the default choice</td><td>✅ works too</td></tr>
+        <tr><td>Extend</td><td><code>interface B extends A</code></td><td><code>type B = A &amp; { … }</code></td></tr>
+        <tr><td>Reopen / merge</td><td>✅ two declarations merge</td><td>❌ duplicate identifier</td></tr>
+        <tr><td>Union <code>'a' | 'b'</code></td><td>❌</td><td>✅</td></tr>
+        <tr><td>Alias of a primitive / tuple / function</td><td>❌</td><td>✅</td></tr>
+        <tr><td>ShopLite convention</td><td><code>Product</code>, <code>CartItem</code></td><td><code>SortDir</code>, <code>FetchState&lt;T&gt;</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Compiler errors this file expects</h2>
+    <div id="errors"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Runtime output</h2>
+    <pre id="log"></pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

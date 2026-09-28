@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 2.2 — Typing fetch &amp; async</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1>Typing fetch: <code>Promise&lt;T&gt;</code> and <code>FetchState&lt;T&gt;</code></h1>
+  <p class="lead">
+    <code>getJSON&lt;T&gt;(url): Promise&lt;T&gt;</code> is written once;
+    <code>getProducts(): Promise&lt;Product[]&gt;</code> and
+    <code>getProduct(id): Promise&lt;Product&gt;</code> reuse it. Failures are
+    folded into a <code>FetchState</code> so the screen can
+    <code>switch</code> on <code>status</code>.
+  </p>
+
+  <section class="panel">
+    <h2>Requests</h2>
+    <div class="row" id="cases">
+      <button type="button" data-case="list">GET /products</button>
+      <button type="button" data-case="one">GET /products/1</button>
+      <button type="button" data-case="404">GET /products/99999 (404)</button>
+      <button type="button" data-case="offline">No network</button>
+      <button type="button" data-case="timeout">Timeout (1 s)</button>
+      <button type="button" data-case="shape">Wrong shape (/users as products)</button>
+    </div>
+    <div id="view"></div>
+    <p class="callout">
+      Try <strong>Wrong shape</strong>: the request succeeds, the type says
+      <code>ProductPage</code>, and the list is silently empty because
+      <code>as T</code> checks nothing. That is the problem lab 2.3 solves.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>State transitions</h2>
+    <pre id="log"></pre>
+  </section>
+
+  <section class="panel">
+    <h2>Compiler errors this file expects</h2>
+    <div id="errors"></div>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

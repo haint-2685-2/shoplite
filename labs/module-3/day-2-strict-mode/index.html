@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 2.4 — strict mode</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1><code>"strict": true</code>, flag by flag</h1>
+  <p class="lead">
+    <code>strict</code> is not one check but a bundle. Each section of this lab
+    triggers one member of the bundle, shows the fix, then runs the unfixed
+    version to show the crash it was protecting you from.
+  </p>
+
+  <p id="status" class="callout">Loading…</p>
+
+  <section class="panel">
+    <h2>What <code>strict</code> switches on</h2>
+    <table>
+      <thead><tr><th>Flag</th><th>Catches</th><th>The ShopLite case</th></tr></thead>
+      <tbody>
+        <tr><td><code>strictNullChecks</code></td><td><code>null</code> / <code>undefined</code> used as a value</td><td><code>querySelector</code>, <code>getItem</code>, <code>find</code></td></tr>
+        <tr><td><code>noImplicitAny</code></td><td>parameters with no type</td><td>event handlers, template helpers</td></tr>
+        <tr><td><code>useUnknownInCatchVariables</code></td><td><code>catch (e)</code> used as an <code>Error</code></td><td><code>getJSON()</code> error handling</td></tr>
+        <tr><td><code>strictPropertyInitialization</code></td><td>class fields never set</td><td>(none — ShopLite has no classes)</td></tr>
+        <tr><td><code>strictFunctionTypes</code></td><td>callbacks that expect the wrong argument</td><td><code>addEventListener</code> handlers</td></tr>
+        <tr><td><code>strictBindCallApply</code>, <code>alwaysStrict</code>, <code>noImplicitThis</code></td><td>the smaller members</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p class="note">
+      TypeScript 6 turns <code>strict</code> on by default. v3-ts writes it out anyway,
+      plus <code>noUncheckedIndexedAccess</code> and <code>exactOptionalPropertyTypes</code>,
+      which are stricter still and not part of the bundle.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Compiler errors this file expects</h2>
+    <div id="errors"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Runtime output</h2>
+    <pre id="log"></pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

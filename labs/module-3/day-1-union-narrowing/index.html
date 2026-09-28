@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.4 — Union types &amp; narrowing</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1>Union types &amp; narrowing</h1>
+  <p class="lead">
+    <code>type Status = 'idle' | 'loading' | 'error' | 'success'</code> — a variable
+    that can only hold one of four strings. Inside each <code>case</code> the
+    compiler knows which one, and a <code>never</code> check turns "I forgot a
+    branch" into a compile error.
+  </p>
+
+  <section class="panel">
+    <h2>Pick a status</h2>
+    <div class="row" id="statuses">
+      <button type="button" data-status="idle">idle</button>
+      <button type="button" data-status="loading">loading</button>
+      <button type="button" data-status="error">error</button>
+      <button type="button" data-status="success">success</button>
+    </div>
+    <p id="view"></p>
+    <p class="note">
+      Pick <strong>success</strong>: <code>withReturnType()</code> has no branch for
+      it and returns <code>undefined</code> — exactly what the TS2366 error below
+      warned about.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Runtime output</h2>
+    <pre id="log"></pre>
+  </section>
+
+  <section class="panel">
+    <h2>Compiler errors this file expects</h2>
+    <div id="errors"></div>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

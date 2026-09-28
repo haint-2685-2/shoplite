@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Module 3 Labs — TypeScript</title>
+  <link rel="stylesheet" href="shared/lab.css">
+  <style>
+    body { max-width: 52rem; }
+    h2 { margin-top: 2rem; }
+    ol { display: flex; flex-direction: column; gap: 0.75rem; margin: 0; padding-left: 1.5rem; }
+    li a { font-weight: 600; text-decoration: none; }
+    li a:hover { text-decoration: underline; }
+    li p { margin: 0.15rem 0 0; color: #5d6672; font-size: 0.9rem; }
+    .cta {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.65rem 1.25rem;
+      background: #2f5bea;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .cta:hover { background: #2246c4; }
+  </style>
+</head>
+<body>
+  <h1>Labs — Module 3: TypeScript</h1>
+  <p class="lead">
+    Nine exercises. This folder is itself a Vite + TypeScript project — lab 1.1
+    is how it was made. The product is <strong>ShopLite v3</strong> in
+    <code>v3-ts/</code>, which has its own dev server.
+  </p>
+
+  <p class="callout">
+    <strong>Run:</strong> <code>cd labs/module-3</code>, <code>npm install</code>,
+    <code>npm run dev</code>, then open <code>http://localhost:5173/</code>.<br>
+    Every deliberate mistake is marked <code>// @ts-expect-error</code>, so
+    <code>npm run typecheck</code> passes — and fails the moment one of them
+    stops being an error. <code>npm run check:errors</code> also checks that
+    each quoted message is word for word what the compiler prints.
+  </p>
+
+  <h2>Day 1 — TypeScript foundations + Vite</h2>
+  <ol>
+    <li>
+      <a href="day-1-vite-setup/">Vite + TypeScript setup</a>
+      <p><code>npm create vite</code>, the project layout, <code>tsconfig.json</code> line by line — and the JavaScript the browser actually receives.</p>
+    </li>
+    <li>
+      <a href="day-1-basic-types/">Basic types &amp; inference</a>
+      <p>Primitives, arrays, tuples, <code>enum</code> vs <code>as const</code>, wrong assignments on purpose, and the annotations inference makes redundant.</p>
+    </li>
+    <li>
+      <a href="day-1-interface-type/"><code>interface</code> vs <code>type</code></a>
+      <p><code>Product</code>, <code>extends</code>, <code>?</code>, <code>readonly</code>, declaration merging — and what only <code>type</code> can express.</p>
+    </li>
+    <li>
+      <a href="day-1-union-narrowing/">Union types &amp; narrowing</a>
+      <p><code>type Status = 'idle' | 'loading' | 'error'</code>, a <code>switch</code> that narrows, and the <code>never</code> check that catches a missing branch.</p>
+    </li>
+    <li>
+      <a href="day-1-function-typing/">Typing functions &amp; callbacks</a>
+      <p>Parameters, returns, optional and rest parameters, function types, and callbacks whose types come from the signature.</p>
+    </li>
+  </ol>
+
+  <h2>Day 2 — Generics, async types &amp; strict mode</h2>
+  <ol start="6">
+    <li>
+      <a href="day-2-generics/">Generics</a>
+      <p><code>identity&lt;T&gt;</code>, <code>getFirst&lt;T&gt;</code> next to its <code>any</code> twin, constraints, <code>keyof</code>, and generic types you already use.</p>
+    </li>
+    <li>
+      <a href="day-2-typed-fetch/">Typing fetch &amp; async</a>
+      <p><code>getJSON&lt;T&gt;(): Promise&lt;T&gt;</code>, <code>getProducts(): Promise&lt;Product[]&gt;</code>, failures folded into <code>FetchState&lt;T&gt;</code>.</p>
+    </li>
+    <li>
+      <a href="day-2-unknown-vs-any/"><code>any</code> vs <code>unknown</code></a>
+      <p>Paste JSON, watch the <code>any</code> version crash and the type-guarded <code>unknown</code> version explain why it refused.</p>
+    </li>
+    <li>
+      <a href="day-2-strict-mode/"><code>strict</code> mode, flag by flag</a>
+      <p><code>querySelector</code> and <code>getItem</code> returning <code>null</code>, implicit <code>any</code>, <code>catch</code> as <code>unknown</code> — and why <code>!</code> is not a fix.</p>
+    </li>
+  </ol>
+
+</body>
+</html>
