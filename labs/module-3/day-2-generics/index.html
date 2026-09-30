@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 2.1 — Generics</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1>Generics</h1>
+  <p class="lead">
+    <code>function getFirst&lt;T&gt;(arr: T[]): T | undefined</code> — one function,
+    every element type, and the caller still gets the right type back.
+    Next to it, the <code>any</code> version: it compiles just as happily and
+    crashes at runtime.
+  </p>
+
+  <div class="grid-2">
+    <section class="panel">
+      <h2>With a type parameter</h2>
+<pre>getFirst(products)  // Product | undefined
+getFirst(prices)    // number | undefined
+findById(cart, 6)   // CartItem | undefined
+pluck(products, 'title')  // string[]</pre>
+    </section>
+    <section class="panel">
+      <h2>With any</h2>
+<pre>getFirstAny(products)       // any
+getFirstAny(products).prise // any — no error
+  .toFixed(2)               // 💥 at runtime</pre>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Compiler errors this file expects</h2>
+    <div id="errors"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Runtime output</h2>
+    <pre id="log"></pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

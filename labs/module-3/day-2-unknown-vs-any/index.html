@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 2.3 — any vs unknown</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1><code>any</code> vs <code>unknown</code></h1>
+  <p class="lead">
+    Both accept any value. <code>any</code> then lets you do anything with it —
+    and checks nothing. <code>unknown</code> lets you do <em>nothing</em> until a
+    runtime check has proven what it is. Paste some JSON and compare.
+  </p>
+
+  <section class="panel">
+    <h2>Input</h2>
+    <div class="row" id="presets">
+      <button type="button" data-preset="valid">valid product</button>
+      <button type="button" data-preset="priceAsString">price as a string</button>
+      <button type="button" data-preset="missingTags">missing tags</button>
+      <button type="button" data-preset="array">an array</button>
+      <button type="button" data-preset="nullValue">null</button>
+      <button type="button" data-preset="notJson">not JSON</button>
+    </div>
+    <label class="visually-hidden" for="json">JSON to parse</label>
+    <textarea id="json" spellcheck="false"></textarea>
+    <div class="row" style="margin-top: 0.5rem">
+      <button type="button" id="run">Parse &amp; compare</button>
+      <button type="button" id="fetch">Try it on the real API</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Result</h2>
+    <pre id="log"></pre>
+    <p class="note">
+      Notice <strong>price as a string</strong>: the <code>any</code> version crashes on
+      <code>.toFixed</code>. With <strong>missing tags</strong> it crashes on
+      <code>.join</code>. The <code>unknown</code> version never crashes — it says why.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Compiler errors this file expects</h2>
+    <div id="errors"></div>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

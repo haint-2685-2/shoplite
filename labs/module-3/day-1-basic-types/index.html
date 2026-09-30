@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.2 — Basic types &amp; inference</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1>Basic types, tuples, enums &amp; inference</h1>
+  <p class="lead">
+    <code>string</code>, <code>number</code>, <code>boolean</code>, <code>null</code>,
+    <code>undefined</code>, arrays, tuples and an <code>enum</code> — each assigned a
+    wrong value on purpose. Then the same code with the redundant annotations
+    removed, because TypeScript infers them.
+  </p>
+
+  <p class="callout">
+    <strong>Rule of thumb for annotations:</strong> write the type on function
+    parameters, on return values of exported functions, and on variables that
+    are declared before they get a value. Everywhere else, hover and let
+    inference do it.
+  </p>
+
+  <section class="panel">
+    <h2>Compiler errors this file expects</h2>
+    <div id="errors"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Runtime output</h2>
+    <pre id="log"></pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

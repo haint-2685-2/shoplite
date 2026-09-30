@@ -8,7 +8,7 @@ không làm lại từ đầu mỗi lần.
 | --- | --- | --- | --- |
 | 1 | HTML / CSS / Tailwind | `v1-html/` | ✅ xong (tag `v1-html`) |
 | 2 | JavaScript | `v2-js/` | ✅ xong (tag `v2-js`) |
-| 3 | TypeScript + Vite | `v3-ts/` | ⏳ |
+| 3 | TypeScript + Vite | `v3-ts/` | ✅ xong (tag `v3-ts`) |
 | 4 | ReactJS | `v4-react/` | ⏳ |
 | 5 | Next.js | `v5-next/` | ⏳ |
 
@@ -32,6 +32,25 @@ start v1-html/index.html      # Windows
 open  v1-html/index.html      # macOS
 ```
 
+**Từ module 3 trở đi mỗi phần là một project npm riêng** (Vite + TypeScript),
+có dev server của nó — `npx serve` không chạy được file `.ts`:
+
+```bash
+cd v3-ts
+npm install
+npm run dev         # http://localhost:5173 — ShopLite v3
+npm run typecheck   # tsc --noEmit, strict
+npm run build       # tsc && vite build -> dist/ (lỗi type là build dừng)
+
+cd labs/module-3
+npm install
+npm run dev         # http://localhost:5173 — 9 lab của module 3
+npm run typecheck   # các lỗi cố ý đều có @ts-expect-error nên phải pass
+npm run check:errors  # đối chiếu từng thông báo lỗi trích dẫn với compiler thật
+```
+
+Cần Node ≥ 23 cho `check:errors` (Node chạy thẳng file `.ts`). Đã thử với Node 24.
+
 ## Cấu trúc thư mục
 
 ```
@@ -39,8 +58,10 @@ shoplite/
 ├─ docs/                     tài liệu lộ trình (bản lưu offline của S*Learn)
 ├─ labs/
 │  ├─ module-1/              9 bài tập HTML/CSS
-│  └─ module-2/              10 bài tập JavaScript
-│     └─ index.html          trang mục lục mở tất cả lab
+│  ├─ module-2/              10 bài tập JavaScript
+│  │  └─ index.html          trang mục lục mở tất cả lab
+│  └─ module-3/              9 bài tập TypeScript — bản thân là một project Vite
+├─ v3-ts/                    DELIVERABLE module 3: ShopLite bằng TypeScript (xem bên dưới)
 ├─ v2-js/                    DELIVERABLE module 2: ShopLite bản động (xem bên dưới)
 └─ v1-html/                  DELIVERABLE module 1: ShopLite bản tĩnh
    ├─ index.html             danh sách sản phẩm
@@ -178,6 +199,99 @@ Dữ liệu hỏng trong localStorage (JSON sai, ai đó sửa tay trong DevTool
 Dark mode của module 1 chỉ là checkbox CSS nên quên lựa chọn mỗi lần đổi trang.
 Module 2 giữ nguyên checkbox và CSS đó, JS chỉ làm thêm việc nhớ — đúng tinh thần
 "tiến hóa, không làm lại".
+
+## Module 3 — TypeScript
+
+`v3-ts/` là project Vite vanilla-ts. HTML và 4 file CSS được copy **nguyên vẹn**
+từ `v2-js/` — giao diện không đổi một pixel. Chỉ có 3 thay đổi trong HTML: thẻ
+`<script>` giờ trỏ vào `/src/pages/*.ts`, và hai câu mô tả.
+
+```
+v3-ts/
+├─ index.html / product.html / cart.html    như v2, script trỏ sang .ts
+├─ css/                  copy từ v2-js/css, không sửa
+├─ vite.config.ts        khai báo 3 trang cho build (multi-page app)
+├─ tsconfig.json         strict + noUncheckedIndexedAccess + exactOptionalPropertyTypes
+└─ src/
+   ├─ types.ts           Product, CartItem, SortDir, FetchState<T>... — chỉ có type
+   ├─ guards.ts          isProduct, isCartItem...: unknown -> kiểu thật, có kiểm tra
+   ├─ dom.ts             $(selector, HTMLInputElement): querySelector không trả null
+   ├─ api.ts             getJSON<T>(url, guard), fetchProducts(): Promise<Product[]>
+   ├─ storage.ts         readJSON() trả unknown, không đoán kiểu
+   ├─ cart.ts            addToCart/removeFromCart/updateQty/getCartTotal — HÀM THUẦN
+   ├─ products.ts        lọc/sắp xếp, nhận readonly Product[]
+   ├─ data.ts            12 sản phẩm dự phòng, giờ bị compiler kiểm tra
+   ├─ ui.ts              template HTML có kiểu
+   └─ pages/             home.ts, detail.ts, cart-page.ts — điều khiển từng trang
+```
+
+**Bốn quyết định đáng nhớ:**
+
+- **Không có `as` nào cho dữ liệu từ ngoài vào.** `res.json()` trả `any`, nên
+  `getJSON<T>(url, isT)` lưu body dưới dạng `unknown` và bắt nó qua một type guard
+  (`value is T`) trước khi trả về `T`. Nếu API đổi shape, lỗi xảy ra ngay tại
+  `api.ts` và trang rơi về dữ liệu dự phòng — không phải `undefined` rải rác khắp
+  giao diện. Tương tự cho `localStorage`: `readJSON()` trả `unknown`, `loadCart()`
+  lọc từng dòng qua `isCartItem`.
+- **Không có `!` nào cho DOM.** `$('#search', HTMLInputElement)` dùng `instanceof`
+  để vừa loại `null` vừa xác nhận đúng loại thẻ — id đổi tên là lỗi rõ ràng ngay khi
+  trang load, không phải "Cannot read properties of null" khi người dùng bấm nút.
+- **Hàm giỏ hàng thành hàm thuần.** Ở v2, `addToCart(product)` tự đọc/ghi
+  localStorage. Ở v3 nó là `addToCart(cart: readonly CartItem[], product, qty):
+  CartItem[]` — nhận mảng, trả mảng mới; lưu trữ là bước riêng:
+  `saveCart(addToCart(loadCart(), product))`. Module 4 dùng lại nguyên các hàm này
+  làm reducer React.
+- **`CartItem extends Product`**, đúng như đề: dòng giỏ giữ nguyên sản phẩm cộng
+  `quantity` (v2 dùng `qty` và chỉ lưu vài trường). Giỏ kiểu v2 còn sót trong
+  localStorage không làm vỡ trang — guard loại bỏ, giỏ về rỗng.
+
+`tsconfig.json`: template Vite mới (TypeScript 6) **không ghi** `strict` vì TS 6 đã
+bật mặc định. v3-ts vẫn ghi `"strict": true` cho tường minh, và bật thêm
+`noUncheckedIndexedAccess` (`list[0]` có thể là `undefined`) cùng
+`exactOptionalPropertyTypes`. Template cũng bật `erasableSyntaxOnly` — cấm `enum` —
+nên ShopLite dùng union literal (`'asc' | 'desc'`) thay cho enum.
+
+### Lab module 3
+
+`labs/module-3/` là một project Vite riêng — chính nó là bài "setup" (lab 1.1).
+Mỗi lỗi cố ý trong lab được viết:
+
+```ts
+// @ts-expect-error TS2322 Type 'string' is not assignable to type 'number'.
+price = '19.99'; // fix: price = 19.99;
+```
+
+- `tsc` **fail nếu dòng dưới directive hết lỗi**, nên lab không thể liệt kê một lỗi
+  không có thật.
+- Trang lab đọc source của chính nó (`import source from './main.ts?raw'`) và dựng
+  bảng "Line / Code / Compiler says / Fix" từ các comment đó.
+- `npm run check:errors` tắt tạm các directive trong bộ nhớ, compile, rồi so từng
+  mã lỗi + thông báo với compiler thật (48/48 khớp). Nhờ vậy mới phát hiện được vài
+  chỗ compiler nói khác dự đoán — ví dụ thiếu nhánh `'success'` trong `switch` thì
+  lỗi là `Type '"success"' is not assignable to type 'never'`, chỉ đích danh nhánh
+  bị thiếu.
+
+Lab tắt `erasableSyntaxOnly` (để demo `enum`) và `noUnusedLocals` (lab khai báo biến
+chỉ để hover xem kiểu); còn lại cùng độ strict với v3-ts.
+
+### Module 3 — đối chiếu tiêu chí "done"
+
+| Tiêu chí | Hiện thực ở đâu |
+| --- | --- |
+| Project Vite-TS chạy được (`npm run dev`), không lỗi | `v3-ts/`, `labs/module-3/` |
+| `types.ts` có `Product`, `CartItem`, `SortDir`, `FetchState<T>`, import được | `v3-ts/src/types.ts` — dùng ở mọi file `src/` |
+| Đọc hiểu thông báo lỗi compiler và biết sửa | bảng lỗi trong từng lab (48 lỗi, cột "Fix") |
+| Kiểu cơ bản, tuple, enum, inference, `any` | `labs/module-3/day-1-basic-types/` |
+| `interface` vs `type`, `extends`, `?`, `readonly` | `labs/module-3/day-1-interface-type/` |
+| Union + `switch` narrowing, lỗi khi thiếu nhánh | `labs/module-3/day-1-union-narrowing/`, `applyFilters()` trong `products.ts` |
+| Type tham số, giá trị trả về, callback | `labs/module-3/day-1-function-typing/` |
+| Generics `identity`/`getFirst` so với bản `any` | `labs/module-3/day-2-generics/` |
+| `getJSON<T>()` + `getProducts(): Promise<Product[]>` + `FetchState` | `v3-ts/src/api.ts`, `labs/module-3/day-2-typed-fetch/` |
+| `unknown` + narrowing thay vì ép kiểu | `v3-ts/src/guards.ts`, `labs/module-3/day-2-unknown-vs-any/` |
+| `strict: true`, sửa hết lỗi `querySelector`/`getItem` | `v3-ts/tsconfig.json`, `dom.ts`, `storage.ts`, `labs/module-3/day-2-strict-mode/` |
+| `npm run build` không lỗi type | `tsc && vite build` — pass |
+| Không còn `any` lén lút | `v3-ts/src`: 0 `any`, 0 ép kiểu `as` (ngoài `as const`), 0 non-null `!` — chỉ còn trong comment |
+| ShopLite chạy y hệt module 2 | đã chạy thử: tìm kiếm, lọc, sort, chi tiết, giỏ giữ qua reload, JSON hỏng tự phục hồi |
 
 ## Ảnh sản phẩm
 

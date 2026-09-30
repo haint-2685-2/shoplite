@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.1 — Vite + TypeScript setup</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1>Setting up Vite with TypeScript</h1>
+  <p class="lead">
+    This very lab folder was created with the command below. The browser never
+    sees a type: Vite strips them on the fly, and <code>tsc</code> checks them
+    separately.
+  </p>
+
+  <section class="panel">
+    <h2>1. Create, install, run</h2>
+<pre>npm create vite@latest module-3 -- --template vanilla-ts
+cd module-3
+npm install
+npm run dev        # http://localhost:5173 — compiles .ts on every request
+npm run typecheck  # tsc --noEmit: type errors only, writes nothing
+npm run build      # tsc && vite build — a type error stops the build</pre>
+  </section>
+
+  <section class="panel">
+    <h2>2. What the template gives you</h2>
+<pre>module-3/
+├─ index.html        the entry point IS an html file, not a .js file
+├─ package.json      devDependencies: typescript + vite, nothing else
+├─ tsconfig.json     how strict tsc is, and what it may assume about the runtime
+└─ src/main.ts       &lt;script type="module" src="/src/main.ts"&gt; — a .ts file, straight from HTML</pre>
+    <p class="note">
+      In this repo <code>src/</code> was removed: each lab folder holds its own
+      <code>index.html</code> + <code>main.ts</code>, and <code>vite.config.ts</code>
+      lists them so <code>npm run build</code> outputs every page.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>3. tsconfig.json, line by line</h2>
+    <table>
+      <thead><tr><th>Option</th><th>What it means here</th></tr></thead>
+      <tbody>
+        <tr><td><code>"target": "es2023"</code></td><td>Which JavaScript syntax the output may use. Modern browsers only, so no down-levelling.</td></tr>
+        <tr><td><code>"lib": ["ES2023", "DOM"]</code></td><td>Which built-ins exist. Without <code>DOM</code>, <code>document</code> is an error.</td></tr>
+        <tr><td><code>"types": ["vite/client"]</code></td><td>Adds Vite's globals: <code>import.meta.env</code>, <code>?raw</code> imports, CSS imports.</td></tr>
+        <tr><td><code>"moduleResolution": "bundler"</code></td><td>Resolve imports the way Vite does, not the way Node does.</td></tr>
+        <tr><td><code>"noEmit": true</code></td><td>tsc never writes a .js file. Vite does the compiling; tsc is only the checker.</td></tr>
+        <tr><td><code>"verbatimModuleSyntax": true</code></td><td>Type-only imports must be written <code>import type</code>, so a transpiler that sees one file at a time knows it can drop them.</td></tr>
+        <tr><td><code>"erasableSyntaxOnly": true</code></td><td>Only syntax that can be <em>deleted</em> is allowed. <code>enum</code> generates code, so it is refused. Turned off in these labs so lab 1.2 can show one.</td></tr>
+        <tr><td><code>"strict": true</code></td><td>The default since TypeScript 6 — the template does not even write it. v3-ts writes it anyway. See lab 2.4.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>4. Proof: types do not exist at runtime</h2>
+    <p class="note">
+      Below is <code>demo.ts</code> as the browser actually received it from the
+      dev server. Compare with the source: every annotation, the interface and
+      the <code>type</code> alias are gone.
+    </p>
+    <div class="grid-2">
+      <div><h3>demo.ts (source)</h3><pre id="source"></pre></div>
+      <div><h3>What the browser ran</h3><pre id="served"></pre></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Runtime output</h2>
+    <pre id="log"></pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

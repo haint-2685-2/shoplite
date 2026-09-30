@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab 1.5 — Typing functions &amp; callbacks</title>
+  <link rel="stylesheet" href="../shared/lab.css">
+</head>
+<body>
+  <h1>Typing functions &amp; callbacks</h1>
+  <p class="lead">
+    Parameters and return values are where annotations earn their keep: they
+    are the contract between the function and every caller. Callbacks get
+    their types from the signature they are passed to — you type the
+    <em>receiver</em>, not each arrow function.
+  </p>
+
+  <section class="panel">
+    <h2>A typed callback, live</h2>
+    <p class="note">Each button passes a different <code>Formatter = (product: Product) =&gt; string</code> to the same <code>renderList()</code>.</p>
+    <div class="row" id="formats">
+      <button type="button" data-format="plain">title only</button>
+      <button type="button" data-format="price">with price</button>
+      <button type="button" data-format="stock">with stock</button>
+    </div>
+    <ul id="list"></ul>
+  </section>
+
+  <section class="panel">
+    <h2>Compiler errors this file expects</h2>
+    <div id="errors"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Runtime output</h2>
+    <pre id="log"></pre>
+  </section>
+
+  <a class="back" href="../index.html">&larr; Back to the module 3 labs</a>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>
